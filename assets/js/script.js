@@ -1,9 +1,14 @@
 var viz;
 var vizDiv;
 var contentUrl;
+var workbookId;
 var isHome;
 var showToolbar = false;
 var showTabs = false;
+var workbookId;
+var workbookIsFavorite = false;
+var sessionInfo;
+var xsrf_token;
 
 function startViz(url)
 {
@@ -11,10 +16,12 @@ function startViz(url)
 	console.log("contentUrl: " + contentUrl);
 
 	if (url === '') {
-		contentUrl = "site/JB-CH/views/Navigation/Home?:render=false";  // "views/Navigation/Home?:render=false"
+		contentUrl = "views/Navigation/Home?:render=false"; // "site/JB-CH/views/Navigation/Home?:render=false"
 		isHome = true;
 		showTabs = false;
 		showToolbar = false;
+		workbookId = null;
+		workbookIsFavorite = false;
 	} else {
 		isHome = false;
 	}
@@ -31,9 +38,38 @@ function startViz(url)
 			// $('#vizContainer iframe').css("margin-left", "100px");
 			viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 			if (getWorksheetForExcelExport()) {
-				$("#exportToExcel").show();
+				$("#exportToExcelItem").show();
 			} else {
-				$("#exportToExcel").hide();
+				$("#exportToExcelItem").hide();
+			}
+			if (url === '') {
+				// console.log(document.cookie);
+				var xsrf_token_regex = /XSRF-TOKEN=(.[^;]*)/ig;
+				var xsrf_token_match = xsrf_token_regex.exec(document.cookie);
+				xsrf_token = xsrf_token_match[1];
+				// console.log(xsrf_token);
+				if (xsrf_token) {
+					$.ajax({
+						url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getSessionInfo",
+						type: "post",
+						data: JSON.stringify({
+							"method": "getSessionInfo",
+							"params": {}
+						}),
+						headers: {
+							"Content-Type": "application/json;charset=UTF-8",
+							"Accept": "application/json, text/plain, */*",
+							"Cache-Control": "no-cache",
+				 			"X-XSRF-TOKEN": xsrf_token
+						},
+						dataType: "json",
+						// contentType: "application/json",
+						success: function (data) {
+							sessionInfo = data.result;
+							console.log(data.result);
+						}
+					});
+				}
 			}
 		}
 	};
@@ -60,7 +96,49 @@ function startViz(url)
 	vizDiv.innerHTML = "";
 	viz = new tableau.Viz(vizDiv, concatUrl, vizOptions);
 	if (url === '') {
+		$("#restartVizItem").hide();
+		$("#toggleFavoriteItem").hide();
+		$("#exportPdfItem").hide();
+		$("#toggleToolbarItem").hide();
 		viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener); // navigation listener on-select
+	} else {
+		$("#iconAddRemoveFavorite").removeClass("icon_star").removeClass("icon_remove-circle").addClass("icon_plus-circle");
+		$("#textAddRemoveFavorite").text("Add to Favorites");
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+		$("#exportPdfItem").show();
+		$("#toggleToolbarItem").show();
+		if (xsrf_token) { // query if this workbook is in favorites
+			$.ajax({
+				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getFavorites",
+				type: "post",
+				data: JSON.stringify({
+					"method": "getFavorites",
+					"params": { "page": { "startIndex": 0, "maxItems": 1000 } }
+				}),
+				headers: {
+					"Content-Type": "application/json;charset=UTF-8",
+					"Accept": "application/json, text/plain, */*",
+					"Cache-Control": "no-cache",
+		 			"X-XSRF-TOKEN": xsrf_token
+				},
+				dataType: "json",
+				// contentType: "application/json",
+				success: function (data) {
+					// console.info(data.result);
+					if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
+						data.result.workbooks.forEach(function(v) {
+							if (v.id == workbookId) {
+								console.log("opened favorite workbook");
+								workbookIsFavorite = true;
+								$("#iconAddRemoveFavorite").removeClass("icon_plus-circle").addClass("icon_star");
+								$("#textAddRemoveFavorite").text("Favorite");
+							}
+						});
+					}
+				}
+			});
+		}
 	}
 //	}, 5000);
 	if (showToolbar) {
@@ -68,6 +146,7 @@ function startViz(url)
 	} else {
 		$("#textShowHideToolbar").text("Show");
 	}
+	// document.cookie = "tableau_locale=en; workgroup_session_id=H7-o4bJXRlahgADd0kmohw|kcJbzJPuEzBJzBpK5QDTnWpzRUtrK9eC; XSRF-TOKEN=kHT1GwDHWbvaxM5rdMjy85Bkc5cpL8XR";
 }
 
 function getWorksheetForExcelExport() {
@@ -89,9 +168,9 @@ function getWorksheetForExcelExport() {
 function onTabSwitch(tabSwitchEvent) {
 //	console.log("tab switch");
 	if (getWorksheetForExcelExport()) {
-		$("#exportToExcel").show();
+		$("#exportToExcelItem").show();
 	} else {
-		$("#exportToExcel").hide();
+		$("#exportToExcelItem").hide();
 	}
 }
 
@@ -139,10 +218,14 @@ function navigationSelectListener(marksEvent)
 				} else if (pairs[pairIndex].fieldName == "showtoolbar") {
 					showToolbar = pairs[pairIndex].value == 1;
 					console.log("show toolbar: " + showToolbar);
+				} else if (pairs[pairIndex].fieldName == "workbook_id") {
+					workbookId = pairs[pairIndex].value;
+					console.log("workbook id: " + workbookId);
 				}
 			}
 		}
 		if (selectedViz) {
+			// console.log(selectedViz);
 			startViz(selectedViz);
 		}
 	});
@@ -223,6 +306,72 @@ function toggleToolbar()
 			startViz(contentUrl);
 			$("#textShowHideToolbar").text("Show");
 		}
+	}
+}
+
+function toggleFavorite()
+{
+ 	if (viz && !isHome && xsrf_token && workbookId) {
+		$("#iconAddRemoveFavorite").removeClass("icon_remove-circle").removeClass("icon_plus-circle");
+ 		if (workbookIsFavorite) {
+			$.ajax({
+				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/removeFavorite",
+				type: "post",
+				data: JSON.stringify({
+					"method": "removeFavorite",
+					"params": { "objectId": workbookId, "objectType": "workbook" }
+				}),
+				headers: {
+					"Content-Type": "application/json;charset=UTF-8",
+					"Accept": "application/json, text/plain, */*",
+					"Cache-Control": "no-cache",
+		 			"X-XSRF-TOKEN": xsrf_token
+				},
+				dataType: "json",
+				success: function (data) {
+					workbookIsFavorite = false;
+					$("#iconAddRemoveFavorite").removeClass("icon_star").removeClass("icon_remove-circle").addClass("icon_plus-circle");
+					$("#textAddRemoveFavorite").text("Add to Favorites");
+				}
+			});
+ 		} else {
+			$.ajax({
+				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/addFavorite",
+				type: "post",
+				data: JSON.stringify({
+					"method": "addFavorite",
+					"params": { "objectId": workbookId, "objectType": "workbook" }
+				}),
+				headers: {
+					"Content-Type": "application/json;charset=UTF-8",
+					"Accept": "application/json, text/plain, */*",
+					"Cache-Control": "no-cache",
+		 			"X-XSRF-TOKEN": xsrf_token
+				},
+				dataType: "json",
+				success: function (data) {
+					workbookIsFavorite = true;
+					$("#iconAddRemoveFavorite").addClass("icon_star");
+					$("#textAddRemoveFavorite").text("Favorite");
+				}
+			});
+ 		}
+	}
+}
+
+function toggleFavoriteMouseOver()
+{
+	if (workbookIsFavorite) {
+		$("#iconAddRemoveFavorite").removeClass("icon_star").addClass("icon_remove-circle");
+		$("#textAddRemoveFavorite").text("Remove from Favorites");
+	}
+}
+
+function toggleFavoriteMouseOut()
+{
+	if (workbookIsFavorite) {
+		$("#iconAddRemoveFavorite").removeClass("icon_remove-circle").addClass("icon_star");
+		$("#textAddRemoveFavorite").text("Favorite");
 	}
 }
 
