@@ -1,30 +1,37 @@
 <!doctype HTML>
 <html lang="en">
 <head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
 
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+	<title>Global Risk Analytics</title>
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/sprites.css">
 
-<title>Global Risk Analytics</title>
-<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-<link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css">
-<link rel="stylesheet" href="assets/css/sprites.css">
+	<style type="text/css">
+		#vizContainer {
+			background-image: url(assets/img/bg-welcome-image.jpg);
+			background-repeat: no-repeat;
+			margin: 0 0;
+			width: 1680px;
+			height: 1110px;
+		}
+		body {
+			background-color: #fff;
+		}
+	</style>
 
-<style type="text/css">
-	#vizContainer {
-		background-image: url(assets/img/bg-welcome-image.jpg);
-		background-repeat: no-repeat;
-		margin: 0 10px;
-		width: 1680px;
-		height: 1110px;
-	}
-</style>
+	<script src="assets/js/jquery-slim.min.js"></script>
+	<script src="assets/js/bootstrap.bundle.min.js"></script>
+	<script src="javascripts/api/tableau-2.js"></script>
+	<script src="assets/js/script.js"></script>
+
 </head>
 
-<body onload="initPage();">
-
-<header class="bjb-header">
+<body>
+<header class="bjb-header" id="portalHeader">
 <!-- <div class="bjb-content"> -->
 	<div class="container-fluid">
 		<div class="row">
@@ -56,12 +63,12 @@
 <!-- </div> -->
 </header>
 
-<div id="vizContainer"></div>
+	<div id="vizContainer"></div>
 
-<script src="assets/js/jquery-slim.min.js"></script>
-<script src="assets/js/bootstrap.bundle.min.js"></script>
-<script src="javascripts/api/tableau-2.js"></script>
-<script src="assets/js/script.js"></script>
-
+	<script>
+		$(document).ready(function(){
+			initPage();
+		});
+	</script>
 </body>
 </html> 

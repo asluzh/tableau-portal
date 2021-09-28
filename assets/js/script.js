@@ -1,4 +1,7 @@
-var viz, vizDiv, contentUrl, isHome;
+var viz;
+var vizDiv;
+var contentUrl;
+var isHome;
 
 function startViz(url, showtabs)
 {
@@ -6,7 +9,7 @@ function startViz(url, showtabs)
 //	console.log("contentUrl: " + contentUrl);
 
 	if (url === '') {
-		contentUrl = "site/JB-CH/views/Navigation/Home";
+		contentUrl = "site/JB-CH/views/Navigation/Home"; //"views/Navigation/Home";
 		isHome = true;
 	} else {
 		isHome = false;
@@ -21,6 +24,7 @@ function startViz(url, showtabs)
 		hideToolbar: true,
 		onFirstInteractive: function() {
 			$('#vizContainer').css("background-image", "none");
+			// $('#vizContainer iframe').css("margin-left", "100px");
 		}
 	};
 
@@ -48,6 +52,13 @@ function startViz(url, showtabs)
 
 function initPage()
 {
+	var newHeight = $(window).height() - $("#portalHeader").height()-1;
+	var newWidth = $(window).width();
+	// console.log("New container height: " + newHeight);
+	// console.log("Header height: " + $("#portalHeader").height());
+	$("#vizContainer").height(newHeight);
+	$("#vizContainer").width(newWidth);
+
 	vizDiv = document.getElementById("vizContainer");
 	if (window.location.hash.length > 2) {
 //		console.log("Stripping out hashes");
