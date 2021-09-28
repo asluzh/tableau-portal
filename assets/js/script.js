@@ -2,15 +2,19 @@ var viz;
 var vizDiv;
 var contentUrl;
 var isHome;
+var showToolbar = false;
+var showTabs = false;
 
-function startViz(url, showtabs)
+function startViz(url)
 {
 	contentUrl = url;
-//	console.log("contentUrl: " + contentUrl);
+	console.log("contentUrl: " + contentUrl);
 
 	if (url === '') {
-		contentUrl = "site/JB-CH/views/Navigation/Home"; //"views/Navigation/Home";
+		contentUrl = "site/JB-CH/views/Navigation/Home?:render=false";  // "views/Navigation/Home?:render=false"
 		isHome = true;
+		showTabs = false;
+		showToolbar = false;
 	} else {
 		isHome = false;
 	}
@@ -25,14 +29,25 @@ function startViz(url, showtabs)
 		onFirstInteractive: function() {
 			$('#vizContainer').css("background-image", "none");
 			// $('#vizContainer iframe').css("margin-left", "100px");
+			viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
+			if (getWorksheetForExcelExport()) {
+				$("#exportToExcel").show();
+			} else {
+				$("#exportToExcel").hide();
+			}
 		}
 	};
 
-	if (showtabs) {
+	if (showTabs) {
 		vizOptions.hideTabs = false;
 	}
+	if (showToolbar) {
+		vizOptions.hideToolbar = false;
+		vizOptions.toolbarPosition = 'top';
+
+	}
 	if (url === '') {
-		vizOptions.hideTabs = false;
+	//	vizOptions.hideTabs = false;
 		$('.homebutton').parent().addClass('active');
 	} else {
 		$('.homebutton').parent().removeClass('active');
@@ -48,14 +63,48 @@ function startViz(url, showtabs)
 		viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener); // navigation listener on-select
 	}
 //	}, 5000);
+	if (showToolbar) {
+		$("#textShowHideToolbar").text("Hide");
+	} else {
+		$("#textShowHideToolbar").text("Show");
+	}
+}
+
+function getWorksheetForExcelExport() {
+	var vizsheet = viz.getWorkbook().getActiveSheet();
+	var ws = null;
+	var matchpattern = /excel/ig;
+	if (vizsheet.getSheetType()==tableau.SheetType.DASHBOARD) {
+		vizsheet.getWorksheets().forEach(function(v) {
+			if (v.getName().match(matchpattern)) {
+				ws = v;
+			}
+		});
+	} else if (vizsheet.getSheetType()==tableau.SheetType.WORKSHEET && vizsheet.getName().match(matchpattern)) {
+		ws = vizsheet;
+	}
+	return ws;
+}
+
+function onTabSwitch(tabSwitchEvent) {
+//	console.log("tab switch");
+	if (getWorksheetForExcelExport()) {
+		$("#exportToExcel").show();
+	} else {
+		$("#exportToExcel").hide();
+	}
 }
 
 function initPage()
 {
-	var newHeight = $(window).height() - $("#portalHeader").height()-1;
-	var newWidth = $(window).width();
+	var newHeight = window.screen.height - $("#portalHeader").height()-200; // 200 is sufficient buffer space to reserve for menubar, statusbar, favorites, etc.
+	var newWidth = window.screen.width;
+	//OLD Version of screen size - changed by JST 11.12.2019
+	//var newHeight = $(window).height() - $("#portalHeader").height()-1;
+	//var newWidth = $(window).width();
 	// console.log("New container height: " + newHeight);
 	// console.log("Header height: " + $("#portalHeader").height());
+
 	$("#vizContainer").height(newHeight);
 	$("#vizContainer").width(newWidth);
 
@@ -77,22 +126,24 @@ function navigationSelectListener(marksEvent)
 {
 	marksEvent.getMarksAsync().then(function(marks) {
 		var selectedViz;
-		var showTabs;
 		if (marks.length == 1) {
-//			console.log("workbook selected");
+			console.log("workbook selected");
 			var pairs = marks[0].getPairs();
 			for (var pairIndex = 0; pairIndex < pairs.length; pairIndex++) {
 				if (pairs[pairIndex].fieldName == "full_url") {
 					selectedViz = pairs[pairIndex].value;
 					console.log("full_url: " + selectedViz);
 				} else if (pairs[pairIndex].fieldName == "showtabs") {
-					showTabs = pairs[pairIndex].value;
+					showTabs = pairs[pairIndex].value == 1;
 					console.log("show tabs: " + showTabs);
+				} else if (pairs[pairIndex].fieldName == "showtoolbar") {
+					showToolbar = pairs[pairIndex].value == 1;
+					console.log("show toolbar: " + showToolbar);
 				}
 			}
 		}
 		if (selectedViz) {
-			startViz(selectedViz, showTabs);
+			startViz(selectedViz);
 		}
 	});
 }
@@ -107,8 +158,8 @@ function resetViz()
 
 function restartViz()
 {
-	if (viz) {
-		startViz(isHome ? '' : contentUrl);
+ 	if (viz && !isHome) {
+		startViz(contentUrl);
 	}
 }
 
@@ -142,8 +193,36 @@ function exportPdf()
 function exportPdfDlg()
 {
  	if (viz && !isHome) {
-//		console.log("viz.showExportPDFDialog");
+		console.log("viz.showExportPDFDialog");
 		viz.showExportPDFDialog();
+	}
+}
+
+function exportCrosstabDlg()
+{
+	if (viz && !isHome) {
+		console.log("viz.showExportCrossTabDialog");
+		var ws = getWorksheetForExcelExport();
+		if (ws) {
+			viz.showExportCrossTabDialog(ws);
+		} else {
+			alert('Export to Excel not permitted');
+		}
+	}
+}
+
+function toggleToolbar()
+{
+ 	if (viz && !isHome) {
+		if (!showToolbar) {
+			showToolbar = true;
+			startViz(contentUrl);
+			$("#textShowHideToolbar").text("Hide");
+		} else {
+			showToolbar = false;
+			startViz(contentUrl);
+			$("#textShowHideToolbar").text("Show");
+		}
 	}
 }
 
