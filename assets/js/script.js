@@ -102,8 +102,7 @@ function startViz(url)
 		$("#toggleToolbarItem").hide();
 		viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener); // navigation listener on-select
 	} else {
-		$("#iconAddRemoveFavorite").removeClass("icon_star").removeClass("icon_remove-circle").addClass("icon_plus-circle");
-		$("#textAddRemoveFavorite").text("Add to Favorites");
+		$("#iconAddRemoveFavorite").text("☆");
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
@@ -131,8 +130,7 @@ function startViz(url)
 							if (v.id == workbookId) {
 								console.log("opened favorite workbook");
 								workbookIsFavorite = true;
-								$("#iconAddRemoveFavorite").removeClass("icon_plus-circle").addClass("icon_star");
-								$("#textAddRemoveFavorite").text("Favorite");
+								$("#iconAddRemoveFavorite").text("★");
 							}
 						});
 					}
@@ -312,7 +310,6 @@ function toggleToolbar()
 function toggleFavorite()
 {
  	if (viz && !isHome && xsrf_token && workbookId) {
-		$("#iconAddRemoveFavorite").removeClass("icon_remove-circle").removeClass("icon_plus-circle");
  		if (workbookIsFavorite) {
 			$.ajax({
 				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/removeFavorite",
@@ -330,8 +327,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					$("#iconAddRemoveFavorite").removeClass("icon_star").removeClass("icon_remove-circle").addClass("icon_plus-circle");
-					$("#textAddRemoveFavorite").text("Add to Favorites");
+					$("#iconAddRemoveFavorite").text("☆");
 				}
 			});
  		} else {
@@ -351,27 +347,11 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					$("#iconAddRemoveFavorite").addClass("icon_star");
-					$("#textAddRemoveFavorite").text("Favorite");
+					$("#iconAddRemoveFavorite").text("★");
+					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
 				}
 			});
  		}
-	}
-}
-
-function toggleFavoriteMouseOver()
-{
-	if (workbookIsFavorite) {
-		$("#iconAddRemoveFavorite").removeClass("icon_star").addClass("icon_remove-circle");
-		$("#textAddRemoveFavorite").text("Remove from Favorites");
-	}
-}
-
-function toggleFavoriteMouseOut()
-{
-	if (workbookIsFavorite) {
-		$("#iconAddRemoveFavorite").removeClass("icon_remove-circle").addClass("icon_star");
-		$("#textAddRemoveFavorite").text("Favorite");
 	}
 }
 
