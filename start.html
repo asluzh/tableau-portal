@@ -1,0 +1,67 @@
+<!doctype HTML>
+<html lang="en">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+
+<title>Global Risk Analytics</title>
+<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css">
+<link rel="stylesheet" href="assets/css/sprites.css">
+
+<style type="text/css">
+	#vizContainer {
+		background-image: url(assets/img/bg-welcome-image.jpg);
+		background-repeat: no-repeat;
+		margin: 0 10px;
+		width: 1680px;
+		height: 1110px;
+	}
+</style>
+</head>
+
+<body onload="initPage();">
+
+<header class="bjb-header">
+<!-- <div class="bjb-content"> -->
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-2 text-left bjb-logo my-2">
+      			<img alt="Julius Baer" src="assets/img/juliusbaer-logo.svg" height="30">
+      		</div>
+			<div class="col-2 d-flex pt-3"><h5>Global Risk Analytics</h5></div>
+      		<div class="col-6 d-flex pt-3">
+      			<nav class="row navbar navbar-expand-lg bjb-navigation">
+      				<div>
+      					<ul class="col list-inline mr-auto justify-content-center collapse navbar-collapse">
+							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="startViz('');"><span class="icon_home"></span>&nbsp;&nbsp;Home</a></li>
+							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="undoViz();"><span class="icon_circle-round-left"></span>&nbsp;&nbsp;Undo</a></li>
+							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="redoViz();"><span class="icon_circle-round-right"></span>&nbsp;&nbsp;Redo</a></li>
+							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="restartViz();"><span class="icon_refresh"></span>&nbsp;&nbsp;Reset Dashboard</a></li>
+        					<li class="list-inline-item nav-item dropdown">
+								<a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export to PDF</a>
+								<div class="dropdown-menu">
+									<a href="#" class="dropdown-item" onclick="exportPdf();">Quick Export to PDF</a>
+									<a href="#" class="dropdown-item" onclick="exportPdfDlg();">Export PDF with Options</a>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</nav>
+			</div>
+		</div>
+	</div><!-- /.container-fluid -->
+<!-- </div> -->
+</header>
+
+<div id="vizContainer"></div>
+
+<script src="assets/js/jquery-slim.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="javascripts/api/tableau-2.js"></script>
+<script src="assets/js/script.js"></script>
+
+</body>
+</html> 
