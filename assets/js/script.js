@@ -41,6 +41,10 @@ function startViz(url, refresh)
 		onFirstInteractive: function() {
 			$('#vizContainer').css("background-image", "none");
 			// $('#vizContainer iframe').css("margin-left", "100px");
+			if (refresh) {
+				console.log("resetting viz...");
+				viz.revertAllAsync();
+			}
 			viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 			if (getWorksheetForExcelExport()) {
 				$("#exportToExcelItem").show();
