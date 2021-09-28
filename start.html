@@ -43,11 +43,12 @@
       			<nav class="row navbar navbar-expand-lg bjb-navigation">
       				<div>
       					<ul class="col list-inline mr-auto justify-content-center collapse navbar-collapse">
+							<li class="list-inline-item nav-item" id="usernameItem" style="display: none;"><span class="icon_user" id="iconUsername"></span><img id="imgUsername" src="" style="border-radius: 50%; width: 20px; height: 20px; object-fit: cover; display: none;">&nbsp;&nbsp;<span id="textUsername"></span>&nbsp;&nbsp;&nbsp;</li>
 							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="startViz('');"><span class="icon_home"></span>&nbsp;&nbsp;Home</a></li>
 							<li class="list-inline-item nav-item" id="undoVizItem"><a href="#" class="nav-link" onclick="undoViz();"><span class="icon_circle-round-left"></span>&nbsp;&nbsp;Undo</a></li>
 							<li class="list-inline-item nav-item" id="redoVizItem"><a href="#" class="nav-link" onclick="redoViz();"><span class="icon_circle-round-right"></span>&nbsp;&nbsp;Redo</a></li>
 							<li class="list-inline-item nav-item" id="restartVizItem" style="display: none;"><a href="#" class="nav-link" onclick="restartViz();"><span class="icon_refresh"></span>&nbsp;&nbsp;Reset Dashboard</a></li>
-							<li class="list-inline-item nav-item" id="toggleFavoriteItem" style="display: none;"><a href="#" class="nav-link" onclick="toggleFavorite();"><span id="iconAddRemoveFavorite">☆</span>&nbsp;&nbsp;Favorite</a></li>
+							<li class="list-inline-item nav-item" id="toggleFavoriteItem" style="display: none;"><a href="#" class="nav-link" onclick="toggleFavorite();"><span id="iconAddRemoveFavorite" style="font-size: 125%; line-height: 100%;">&#x2606;</span>&nbsp;&nbsp;Favorite</a></li>
 							<li class="list-inline-item nav-item" id="exportPdfItem" style="display: none;"><a href="#" class="nav-link" onclick="exportPdfDlg();"><span class="icon_print"></span>&nbsp;&nbsp;Export to PDF</a></li>
 							<li class="list-inline-item nav-item" id="exportToExcelItem" style="display: none;"><a href="#" class="nav-link" onclick="exportCrosstabDlg();"><span class="icon_download"></span>&nbsp;&nbsp;Export to Excel</a></li>
 							<li class="list-inline-item nav-item" id="toggleToolbarItem" style="display: none;"><a href="#" class="nav-link" onclick="toggleToolbar();"><span class="icon_pin"></span>&nbsp;&nbsp;<span id="textShowHideToolbar">Show/Hide</span> Tableau Toolbar</a></li>

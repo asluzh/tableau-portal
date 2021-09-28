@@ -16,7 +16,7 @@ function startViz(url)
 	console.log("contentUrl: " + contentUrl);
 
 	if (url === '') {
-		contentUrl = "views/Navigation/Home?:render=false"; // "site/JB-CH/views/Navigation/Home?:render=false"
+		contentUrl =  "site/JB-CH/views/Navigation/Home?:render=false"; // "views/Navigation/Home?:render=false";
 		isHome = true;
 		showTabs = false;
 		showToolbar = false;
@@ -46,6 +46,8 @@ function startViz(url)
 				// console.log(document.cookie);
 				var xsrf_token_regex = /XSRF-TOKEN=(.[^;]*)/ig;
 				var xsrf_token_match = xsrf_token_regex.exec(document.cookie);
+				var userLanguage = "en";
+				var serverUserId;
 				xsrf_token = xsrf_token_match[1];
 				// console.log(xsrf_token);
 				if (xsrf_token) {
@@ -63,10 +65,82 @@ function startViz(url)
 				 			"X-XSRF-TOKEN": xsrf_token
 						},
 						dataType: "json",
-						// contentType: "application/json",
 						success: function (data) {
+							// console.log(data.result);
 							sessionInfo = data.result;
-							console.log(data.result);
+							$("#textUsername").text(sessionInfo.user.displayName);
+							if (sessionInfo.user.userImageUrl) {
+								$("#iconUsername").hide();
+								$("#imgUsername").attr("src", sessionInfo.user.userImageUrl).show();
+							}
+							$.ajax({
+								url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getServerUsers",
+								type: "post",
+								data: JSON.stringify({
+									"method": "getServerUsers",
+									"params": {
+										"filter": {
+											"operator": "and",
+											"clauses": [
+												{ "field": "username",   "operator": "eq", "value": sessionInfo.user.username },
+												{ "field": "domainName", "operator": "eq", "value": sessionInfo.user.domainName }
+											]
+										},
+										"page": { "startIndex": 0, "maxItems": 1 }
+									}
+								}),
+								headers: {
+									"Content-Type": "application/json;charset=UTF-8",
+									"Accept": "application/json, text/plain, */*",
+									"Cache-Control": "no-cache",
+						 			"X-XSRF-TOKEN": xsrf_token
+								},
+								dataType: "json",
+								success: function (data) {
+									// console.log(data.result);
+									serverUserId = data.result.users[0].id;
+									$.ajax({
+										url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getUserSettings",
+										type: "post",
+										data: JSON.stringify({
+											"method": "getUserSettings",
+											"params": { "username": sessionInfo.user.username, "domainName": sessionInfo.user.domainName }
+										}),
+										headers: {
+											"Content-Type": "application/json;charset=UTF-8",
+											"Accept": "application/json, text/plain, */*",
+											"Cache-Control": "no-cache",
+								 			"X-XSRF-TOKEN": xsrf_token
+										},
+										dataType: "json",
+										success: function (data) {
+											if (data.result.language) {
+												console.log("User language setting: " + data.result.language);
+												// return; // comment out to enforce language=en
+											}
+											$.ajax({
+												url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/updateUserLanguage",
+												type: "post",
+												data: JSON.stringify({
+													"method": "updateUserLanguage",
+													"params": { "userId": serverUserId, "language": userLanguage }
+												}),
+												headers: {
+													"Content-Type": "application/json;charset=UTF-8",
+													"Accept": "application/json, text/plain, */*",
+													"Cache-Control": "no-cache",
+										 			"X-XSRF-TOKEN": xsrf_token
+												},
+												dataType: "json",
+												success: function (data) {
+													console.log("Updated user language setting: " + userLanguage);
+													// console.log(data.result);
+												}
+											});
+										}
+									});
+								}
+							});
 						}
 					});
 				}
@@ -102,11 +176,12 @@ function startViz(url)
 		$("#toggleToolbarItem").hide();
 		viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener); // navigation listener on-select
 	} else {
-		$("#iconAddRemoveFavorite").text("☆");
+		// $("#usernameItem").show();
+		$("#iconAddRemoveFavorite").html("&#x2606;");
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
-		$("#toggleToolbarItem").show();
+		// $("#toggleToolbarItem").show();
 		if (xsrf_token) { // query if this workbook is in favorites
 			$.ajax({
 				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getFavorites",
@@ -130,7 +205,7 @@ function startViz(url)
 							if (v.id == workbookId) {
 								console.log("opened favorite workbook");
 								workbookIsFavorite = true;
-								$("#iconAddRemoveFavorite").text("★");
+								$("#iconAddRemoveFavorite").html("&#x2605;");
 							}
 						});
 					}
@@ -327,7 +402,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					$("#iconAddRemoveFavorite").text("☆");
+					$("#iconAddRemoveFavorite").html("&#x2606;");
 				}
 			});
  		} else {
@@ -347,7 +422,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					$("#iconAddRemoveFavorite").text("★");
+					$("#iconAddRemoveFavorite").html("&#x2605;");
 					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
 				}
 			});
