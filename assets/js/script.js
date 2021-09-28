@@ -1,149 +1,36 @@
 var viz;
 var vizDiv;
 var contentUrl;
-var workbookId;
 var isHome;
 var showToolbar = false;
 var showTabs = false;
-var workbookId;
-var workbookIsFavorite = false;
-var sessionInfo;
-var xsrf_token;
 
 function startViz(url)
 {
 	contentUrl = url;
 	console.log("contentUrl: " + contentUrl);
 
-	if (url === '') {
-		contentUrl =  "site/JB-CH/views/Navigation/Home?:render=false"; // "views/Navigation/Home?:render=false";
+	if (contentUrl === '') {
+		contentUrl = "site/JB-CH/views/Navigation/Home?:render=false";  // "views/Navigation/Home?:render=false"
 		isHome = true;
 		showTabs = false;
 		showToolbar = false;
-		workbookId = null;
-		workbookIsFavorite = false;
 	} else {
 		isHome = false;
 	}
 
 	var concatUrl = window.location.protocol + "//" + window.location.host + "/#/" + contentUrl;
-//	console.log("concatUrl: " + concatUrl);
-//	console.log(viz);
 
 	var vizOptions = {
 		hideTabs: true,
 		hideToolbar: true,
 		onFirstInteractive: function() {
 			$('#vizContainer').css("background-image", "none");
-			// $('#vizContainer iframe').css("margin-left", "100px");
 			viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 			if (getWorksheetForExcelExport()) {
-				$("#exportToExcelItem").show();
+				$("#exportToExcel").show();
 			} else {
-				$("#exportToExcelItem").hide();
-			}
-			if (url === '') {
-				// console.log(document.cookie);
-				var xsrf_token_regex = /XSRF-TOKEN=(.[^;]*)/ig;
-				var xsrf_token_match = xsrf_token_regex.exec(document.cookie);
-				var userLanguage = "en";
-				var serverUserId;
-				xsrf_token = xsrf_token_match[1];
-				// console.log(xsrf_token);
-				if (xsrf_token) {
-					$.ajax({
-						url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getSessionInfo",
-						type: "post",
-						data: JSON.stringify({
-							"method": "getSessionInfo",
-							"params": {}
-						}),
-						headers: {
-							"Content-Type": "application/json;charset=UTF-8",
-							"Accept": "application/json, text/plain, */*",
-							"Cache-Control": "no-cache",
-				 			"X-XSRF-TOKEN": xsrf_token
-						},
-						dataType: "json",
-						success: function (data) {
-							// console.log(data.result);
-							sessionInfo = data.result;
-							$("#textUsername").text(sessionInfo.user.displayName);
-							if (sessionInfo.user.userImageUrl) {
-								$("#iconUsername").hide();
-								$("#imgUsername").attr("src", sessionInfo.user.userImageUrl).show();
-							}
-							$.ajax({
-								url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getServerUsers",
-								type: "post",
-								data: JSON.stringify({
-									"method": "getServerUsers",
-									"params": {
-										"filter": {
-											"operator": "and",
-											"clauses": [
-												{ "field": "username",   "operator": "eq", "value": sessionInfo.user.username },
-												{ "field": "domainName", "operator": "eq", "value": sessionInfo.user.domainName }
-											]
-										},
-										"page": { "startIndex": 0, "maxItems": 1 }
-									}
-								}),
-								headers: {
-									"Content-Type": "application/json;charset=UTF-8",
-									"Accept": "application/json, text/plain, */*",
-									"Cache-Control": "no-cache",
-						 			"X-XSRF-TOKEN": xsrf_token
-								},
-								dataType: "json",
-								success: function (data) {
-									// console.log(data.result);
-									serverUserId = data.result.users[0].id;
-									$.ajax({
-										url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getUserSettings",
-										type: "post",
-										data: JSON.stringify({
-											"method": "getUserSettings",
-											"params": { "username": sessionInfo.user.username, "domainName": sessionInfo.user.domainName }
-										}),
-										headers: {
-											"Content-Type": "application/json;charset=UTF-8",
-											"Accept": "application/json, text/plain, */*",
-											"Cache-Control": "no-cache",
-								 			"X-XSRF-TOKEN": xsrf_token
-										},
-										dataType: "json",
-										success: function (data) {
-											if (data.result.language) {
-												console.log("User language setting: " + data.result.language);
-												// return; // comment out to enforce language=en
-											}
-											$.ajax({
-												url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/updateUserLanguage",
-												type: "post",
-												data: JSON.stringify({
-													"method": "updateUserLanguage",
-													"params": { "userId": serverUserId, "language": userLanguage }
-												}),
-												headers: {
-													"Content-Type": "application/json;charset=UTF-8",
-													"Accept": "application/json, text/plain, */*",
-													"Cache-Control": "no-cache",
-										 			"X-XSRF-TOKEN": xsrf_token
-												},
-												dataType: "json",
-												success: function (data) {
-													console.log("Updated user language setting: " + userLanguage);
-													// console.log(data.result);
-												}
-											});
-										}
-									});
-								}
-							});
-						}
-					});
-				}
+				$("#exportToExcel").hide();
 			}
 		}
 	};
@@ -163,55 +50,13 @@ function startViz(url)
 		$('.homebutton').parent().removeClass('active');
 	}
 	if (viz) {
-//		console.log("Calling viz.dispose()");
 		viz.dispose();
 	}
 //	setTimeout(function() { // DEBUG: emulate a delay
 	vizDiv.innerHTML = "";
 	viz = new tableau.Viz(vizDiv, concatUrl, vizOptions);
 	if (url === '') {
-		$("#restartVizItem").hide();
-		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#toggleToolbarItem").hide();
 		viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener); // navigation listener on-select
-	} else {
-		// $("#usernameItem").show();
-		$("#iconAddRemoveFavorite").html("&#x2606;");
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		// $("#toggleToolbarItem").show();
-		if (xsrf_token) { // query if this workbook is in favorites
-			$.ajax({
-				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/getFavorites",
-				type: "post",
-				data: JSON.stringify({
-					"method": "getFavorites",
-					"params": { "page": { "startIndex": 0, "maxItems": 1000 } }
-				}),
-				headers: {
-					"Content-Type": "application/json;charset=UTF-8",
-					"Accept": "application/json, text/plain, */*",
-					"Cache-Control": "no-cache",
-		 			"X-XSRF-TOKEN": xsrf_token
-				},
-				dataType: "json",
-				// contentType: "application/json",
-				success: function (data) {
-					// console.info(data.result);
-					if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
-						data.result.workbooks.forEach(function(v) {
-							if (v.id == workbookId) {
-								console.log("opened favorite workbook");
-								workbookIsFavorite = true;
-								$("#iconAddRemoveFavorite").html("&#x2605;");
-							}
-						});
-					}
-				}
-			});
-		}
 	}
 //	}, 5000);
 	if (showToolbar) {
@@ -219,7 +64,6 @@ function startViz(url)
 	} else {
 		$("#textShowHideToolbar").text("Show");
 	}
-	// document.cookie = "tableau_locale=en; workgroup_session_id=H7-o4bJXRlahgADd0kmohw|kcJbzJPuEzBJzBpK5QDTnWpzRUtrK9eC; XSRF-TOKEN=kHT1GwDHWbvaxM5rdMjy85Bkc5cpL8XR";
 }
 
 function getWorksheetForExcelExport() {
@@ -241,9 +85,9 @@ function getWorksheetForExcelExport() {
 function onTabSwitch(tabSwitchEvent) {
 //	console.log("tab switch");
 	if (getWorksheetForExcelExport()) {
-		$("#exportToExcelItem").show();
+		$("#exportToExcel").show();
 	} else {
-		$("#exportToExcelItem").hide();
+		$("#exportToExcel").hide();
 	}
 }
 
@@ -262,10 +106,8 @@ function initPage()
 
 	vizDiv = document.getElementById("vizContainer");
 	if (window.location.hash.length > 2) {
-//		console.log("Stripping out hashes");
 		var view = window.location.hash.substr(2);
 		while (view.substr(0,2) === "#/") {
-//			console.log("trim view: " + view);
 			view = view.substr(2);
 		}
 		startViz(view);
@@ -291,16 +133,14 @@ function navigationSelectListener(marksEvent)
 				} else if (pairs[pairIndex].fieldName == "showtoolbar") {
 					showToolbar = pairs[pairIndex].value == 1;
 					console.log("show toolbar: " + showToolbar);
-				} else if (pairs[pairIndex].fieldName == "workbook_id") {
-					workbookId = pairs[pairIndex].value;
-					console.log("workbook id: " + workbookId);
 				}
 			}
 		}
 		if (selectedViz) {
-			// console.log(selectedViz);
 			startViz(selectedViz);
 		}
+	}, function(error) {
+		console.log("error when selecting workbook");
 	});
 }
 
@@ -379,54 +219,6 @@ function toggleToolbar()
 			startViz(contentUrl);
 			$("#textShowHideToolbar").text("Show");
 		}
-	}
-}
-
-function toggleFavorite()
-{
- 	if (viz && !isHome && xsrf_token && workbookId) {
- 		if (workbookIsFavorite) {
-			$.ajax({
-				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/removeFavorite",
-				type: "post",
-				data: JSON.stringify({
-					"method": "removeFavorite",
-					"params": { "objectId": workbookId, "objectType": "workbook" }
-				}),
-				headers: {
-					"Content-Type": "application/json;charset=UTF-8",
-					"Accept": "application/json, text/plain, */*",
-					"Cache-Control": "no-cache",
-		 			"X-XSRF-TOKEN": xsrf_token
-				},
-				dataType: "json",
-				success: function (data) {
-					workbookIsFavorite = false;
-					$("#iconAddRemoveFavorite").html("&#x2606;");
-				}
-			});
- 		} else {
-			$.ajax({
-				url: window.location.protocol + "//" + window.location.host + "/vizportal/api/web/v1/addFavorite",
-				type: "post",
-				data: JSON.stringify({
-					"method": "addFavorite",
-					"params": { "objectId": workbookId, "objectType": "workbook" }
-				}),
-				headers: {
-					"Content-Type": "application/json;charset=UTF-8",
-					"Accept": "application/json, text/plain, */*",
-					"Cache-Control": "no-cache",
-		 			"X-XSRF-TOKEN": xsrf_token
-				},
-				dataType: "json",
-				success: function (data) {
-					workbookIsFavorite = true;
-					$("#iconAddRemoveFavorite").html("&#x2605;");
-					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
-				}
-			});
- 		}
 	}
 }
 
