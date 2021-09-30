@@ -159,7 +159,6 @@ left join (
 	join tags t on t.id = tg.tag_id
 	where tg.taggable_type = 'View'
 	  and t.name like '%/%'
-    group by v.id
 ) tagt on tagt.id = v.id
 left join (
 select

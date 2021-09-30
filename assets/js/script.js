@@ -2,6 +2,7 @@ var viz;
 var vizDiv;
 var contentUrl;
 var navUrl = null;
+var deviceType = "desktop";
 var workbookId;
 var viewId;
 var isHome;
@@ -28,7 +29,6 @@ function startViz(url, refresh)
 	// console.log("contentUrl: " + contentUrl);
 
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
-	// var newSite;
 
 	if (url === '') {
 		tableau_url = tableau_url + "t/JB-CH/views/Navigation/Home?:render=false&:refresh=yes";
@@ -47,7 +47,7 @@ function startViz(url, refresh)
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
 		isHome = false;
 		if (refresh) {
-			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + "?:refresh=yes";
+			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 		}
 	}
 
@@ -288,6 +288,7 @@ function onTabSwitch(tabSwitchEvent) {
 		$("#toggleFavoriteItem").hide();
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
+		exportPdfDlg();
 	} else {
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
@@ -300,7 +301,7 @@ function onTabSwitch(tabSwitchEvent) {
 }
 
 function onUrlAction(urlActionEvent) {
-	console.log("tab switch event");
+	console.log("url action event");
 	var url = urlActionEvent.getUrl();
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 	if (url.match(new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") ))) {
@@ -363,11 +364,11 @@ function navigationSelectListener(marksEvent)
 							showToolbar = pairs[pairIndex].value == 1;
 							console.log("show toolbar: " + showToolbar);
 						} else if (pairs[pairIndex].fieldName == "responsive" || pairs[pairIndex].fieldName == "ATTR(responsive)") {
-							workbookId = pairs[pairIndex].value;
-							console.log("responsive: " + workbookId);
+							responsiveViz = pairs[pairIndex].value;
+							console.log("responsive: " + responsiveViz);
 						} else if (pairs[pairIndex].fieldName == "comments" || pairs[pairIndex].fieldName == "ATTR(comments)") {
-							workbookId = pairs[pairIndex].value;
-							console.log("comments: " + workbookId);
+							useComments = pairs[pairIndex].value;
+							console.log("comments: " + useComments);
 						}
 					}
 				}
@@ -388,7 +389,7 @@ function resetViz()
 
 function restartViz()
 {
- 	if (viz && !isHome) {
+	if (viz && !isHome) {
 		startViz(contentUrl, true);
 	}
 }
@@ -403,6 +404,13 @@ function undoViz()
 function redoViz()
 {
 	if (viz) {
+		viz.redoAsync();
+	}
+}
+
+function goBackViz()
+{
+	if (viz) {
 		viz.undoAsync().then(setTimeout(function() { // check the status with a delay (immediately doesn't work)
 			// in some cases, two steps back are necessary after printing to PDF
 			// however we need to be careful not to go back too far
@@ -414,16 +422,9 @@ function redoViz()
 	}
 }
 
-function goBackViz()
-{
-	if (viz) {
-		viz.redoAsync();
-	}
-}
-
 function exportPdfDlg()
 {
- 	if (viz && !isHome) {
+	if (viz && !isHome) {
 		console.log("viz.showExportPDFDialog");
 		viz.showExportPDFDialog();
 	}
@@ -431,7 +432,7 @@ function exportPdfDlg()
 
 function exportPptDlg()
 {
- 	if (viz && !isHome) {
+	if (viz && !isHome) {
 		console.log("viz.showExportPowerPointDialog");
 		viz.showExportPowerPointDialog();
 	}
@@ -453,7 +454,7 @@ function exportCrosstabDlg()
 function toggleDevice()
 {
 	var newWidth, newHeight;
- 	if (viz && !isHome) {
+	if (viz && !isHome) {
 		if (deviceType === "desktop") {
 			newWidth = 1169;
 			newHeight = 827;
@@ -478,15 +479,17 @@ function toggleDevice()
 function toggleComments()
 {
 	console.log("comments button");
- 	if (viz && !isHome) {
-		 $("#vizComments").toggle();
+	if (viz && !isHome) {
+		$("#vizComments").toggle();
 	}
 }
 
 function toggleFavorite()
 {
- 	if (viz && !isHome && xsrf_token && workbookId) {
- 		if (workbookIsFavorite) {
+	console.log("favorites button");
+	if (viz && !isHome && xsrf_token && workbookId) {
+		if (workbookIsFavorite) {
+			console.log("remove from favorites");
 			$.ajax({
 				url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/removeFavorite",
 				type: "post",
@@ -498,7 +501,7 @@ function toggleFavorite()
 					"Content-Type": "application/json;charset=UTF-8",
 					"Accept": "application/json, text/plain, */*",
 					"Cache-Control": "no-cache",
-		 			"X-XSRF-TOKEN": xsrf_token
+					"X-XSRF-TOKEN": xsrf_token
 				},
 				dataType: "json",
 				success: function (data) {
@@ -506,7 +509,8 @@ function toggleFavorite()
 					$("#iconAddRemoveFavorite").html("&#x2606;");
 				}
 			});
- 		} else {
+		} else {
+			console.log("add to favorites");
 			$.ajax({
 				url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/addFavorite",
 				type: "post",
@@ -518,7 +522,7 @@ function toggleFavorite()
 					"Content-Type": "application/json;charset=UTF-8",
 					"Accept": "application/json, text/plain, */*",
 					"Cache-Control": "no-cache",
-		 			"X-XSRF-TOKEN": xsrf_token
+					"X-XSRF-TOKEN": xsrf_token
 				},
 				dataType: "json",
 				success: function (data) {
@@ -527,13 +531,13 @@ function toggleFavorite()
 					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
 				}
 			});
- 		}
+		}
 	}
 }
 
 function openTableauServer()
 {
- 	if (viz && !isHome) {
+	if (viz && !isHome) {
 		viz.getCurrentUrlAsync().then(function(url){
 			window.open(url.substring(0, url.indexOf('?')), "_blank");
 		});
