@@ -364,10 +364,10 @@ function navigationSelectListener(marksEvent)
 							showToolbar = pairs[pairIndex].value == 1;
 							console.log("show toolbar: " + showToolbar);
 						} else if (pairs[pairIndex].fieldName == "responsive" || pairs[pairIndex].fieldName == "ATTR(responsive)") {
-							responsiveViz = pairs[pairIndex].value;
+							responsiveViz = pairs[pairIndex].value == 1;
 							console.log("responsive: " + responsiveViz);
 						} else if (pairs[pairIndex].fieldName == "comments" || pairs[pairIndex].fieldName == "ATTR(comments)") {
-							useComments = pairs[pairIndex].value;
+							useComments = pairs[pairIndex].value == 1;
 							console.log("comments: " + useComments);
 						}
 					}
@@ -481,6 +481,38 @@ function toggleComments()
 	console.log("comments button");
 	if (viz && !isHome) {
 		$("#vizComments").toggle();
+		if ($("#vizComments").is(":visible")) {
+			if (xsrf_token && viewId) {
+				$.ajax({
+					url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getComments",
+					type: "post",
+					data: JSON.stringify({
+						"method": "getComments",
+						"params": { "page": { "startIndex": 0, "maxItems": 1000 } }
+					}),
+					headers: {
+						"Content-Type": "application/json;charset=UTF-8",
+						"Accept": "application/json, text/plain, */*",
+						"Cache-Control": "no-cache",
+						"X-XSRF-TOKEN": xsrf_token
+					},
+					dataType: "json",
+					success: function (data) {
+						console.log(data);
+						// if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
+						// 	data.result.workbooks.forEach(function(v) {
+						// 		if (v.id == workbookId) {
+						// 			workbookIsFavorite = true;
+						// 			$("#iconAddRemoveFavorite").html("&#x2605;");
+						// 		}
+						// 	});
+						// }
+					}
+				});			
+			} else {
+				console.log("fetching comments not possible");
+			}
+		}
 	}
 }
 
