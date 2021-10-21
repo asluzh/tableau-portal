@@ -65,7 +65,7 @@ function startViz(url, refresh)
 			} else {
 				viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 				viz.addEventListener(tableau.TableauEventName.URL_ACTION, onUrlAction);
-				useComments = true;
+				// useComments = true;
 			}
 			$('#vizContainer').css("background-image", "none");
 			// $('#vizContainer iframe').css("margin-left", "100px");
