@@ -3,6 +3,7 @@ select distinct prm.*
 	,w.name as workbook_name
 	,w.description as workbook_description
 	,v.name as view_name
+	,v.id as view_id
 	,regexp_replace(v.repository_url, '/sheets'::text, ''::text) AS view_url
 	,p.name as project_name
 	,s.url_namespace as site_url
@@ -11,6 +12,7 @@ select distinct prm.*
 	,coalesce(tagv.showtabs,0) as showtabs
 	,coalesce(tagv.showtoolbar,0) as showtoolbar
 	,coalesce(tagv.responsive,0) as responsive
+	,coalesce(tagv.comments,0) as comments
 	,fav.position as fav_position
 	,vs.nviews
 	,vs.last_view_time
@@ -144,6 +146,7 @@ left join (
 		,max(case when t.name='showtabs' and t.id>0 then 1 end) as showtabs
 		,max(case when t.name='showtoolbar' and t.id>0 then 1 end) as showtoolbar
 		,max(case when t.name='responsive' and t.id>0 then 1 end) as responsive
+		,max(case when t.name='comments' and t.id>0 then 1 end) as comments
 	from views v
 	join taggings tg on tg.taggable_id = v.id
 	join tags t on t.id = tg.tag_id
@@ -158,7 +161,7 @@ left join (
 	join taggings tg on tg.taggable_id = v.id
 	join tags t on t.id = tg.tag_id
 	where tg.taggable_type = 'View'
-	  and t.name like '%/%'
+	and t.name like '%/%'
 ) tagt on tagt.id = v.id
 left join (
 select

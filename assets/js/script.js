@@ -16,9 +16,9 @@ var sessionInfo;
 var xsrf_token;
 
 var tableau_protocol = window.location.protocol;
-tableau_protocol = "https:"; // override for testing
+// tableau_protocol = "https:"; // override for testing
 var tableau_host = window.location.host;
-tableau_host = "taluat1"; // override for testing
+// tableau_host = "taluat1"; // override for testing
 
 var exportToExcelMatch = /excel/ig;
 var printToPdfMatch = /#print/ig;
@@ -93,7 +93,7 @@ function startViz(url, refresh)
 			var serverUserId;
 			if (xsrf_token_match) {
 				xsrf_token = xsrf_token_match[1];
-				console.log("xsrf_token = " + xsrf_token);
+				// console.log("xsrf_token = " + xsrf_token);
 			}
 			if (xsrf_token) {
 				if (url === '') {
@@ -236,10 +236,10 @@ function startViz(url, refresh)
 	viz = new tableau.Viz(vizDiv, tableau_url, vizOptions);
 
 	if (url === '') {
-		$("#undoVizItem").show();
-		$("#redoVizItem").show();
+		$("#undoVizItem").hide();
+		$("#redoVizItem").hide();
 		$("#goBackItem").hide();
-		$("#restartVizItem").hide();
+		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").hide();
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
@@ -280,7 +280,12 @@ function onTabSwitch(tabSwitchEvent) {
 	} else {
 		$("#exportToExcelItem").hide();
 	}
-	if (tabSwitchEvent.getNewSheetName().match(printToPdfMatch)) {
+	var newsheet = tabSwitchEvent.getNewSheetName();
+	// ASL TODO: get new view id for comments feature
+	// console.log(newsheet);
+	// var sheets = viz.getWorkbook().getPublishedSheetsInfo();
+	// console.log(sheets);
+	if (newsheet.match(printToPdfMatch)) {
 		$("#undoVizItem").hide();
 		$("#redoVizItem").hide();
 		$("#goBackItem").show();
@@ -333,6 +338,8 @@ function initPage()
 	}
 }
 
+$(document).ready(initPage);
+
 function navigationSelectListener(marksEvent)
 {
 	viz.getCurrentUrlAsync().then(function(url) {
@@ -357,6 +364,9 @@ function navigationSelectListener(marksEvent)
 						} else if (pairs[pairIndex].fieldName == "workbook_id" || pairs[pairIndex].fieldName == "ATTR(workbook_id)") {
 							workbookId = pairs[pairIndex].value;
 							console.log("workbook id: " + workbookId);
+						} else if (pairs[pairIndex].fieldName == "view_id" || pairs[pairIndex].fieldName == "ATTR(view_id)") {
+							viewId = pairs[pairIndex].value;
+							console.log("view id: " + viewId);
 						} else if (pairs[pairIndex].fieldName == "showtabs" || pairs[pairIndex].fieldName == "ATTR(showtabs)") {
 							showTabs = pairs[pairIndex].value == 1;
 							console.log("show tabs: " + showTabs);
@@ -462,7 +472,7 @@ function toggleDevice()
 			$("#vizContainer").width(newWidth);
 			$("#vizContainer").height(newHeight);
 			deviceType = "tablet";
-			$("#deviceType").text("A4&nbsp;Format");
+			$("#deviceType").text("Tablet");
 		} else {
 			newWidth = window.screen.width;
 			newHeight = window.screen.height - $("#portalHeader").height()-200;
@@ -482,37 +492,117 @@ function toggleComments()
 	if (viz && !isHome) {
 		$("#vizComments").toggle();
 		if ($("#vizComments").is(":visible")) {
-			if (xsrf_token && viewId) {
-				$.ajax({
-					url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getComments",
-					type: "post",
-					data: JSON.stringify({
-						"method": "getComments",
-						"params": { "page": { "startIndex": 0, "maxItems": 1000 } }
-					}),
-					headers: {
-						"Content-Type": "application/json;charset=UTF-8",
-						"Accept": "application/json, text/plain, */*",
-						"Cache-Control": "no-cache",
-						"X-XSRF-TOKEN": xsrf_token
-					},
-					dataType: "json",
-					success: function (data) {
-						console.log(data);
-						// if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
-						// 	data.result.workbooks.forEach(function(v) {
-						// 		if (v.id == workbookId) {
-						// 			workbookIsFavorite = true;
-						// 			$("#iconAddRemoveFavorite").html("&#x2605;");
-						// 		}
-						// 	});
-						// }
-					}
-				});			
-			} else {
-				console.log("fetching comments not possible");
-			}
+			updateComments();
 		}
+	}
+}
+
+function updateComments() {
+	// console.log("update comments");
+	if (xsrf_token && viewId) {
+		$.ajax({
+			url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getCommentsWithMentions",
+			type: "post",
+			data: JSON.stringify({
+				"method": "getCommentsWithMentions",
+				"params": {
+					"commentableId": viewId,
+					"commentableType": "VIEW",
+					"page": { "startIndex": 0, "maxItems": 1000 }
+				}
+			}),
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+				"Accept": "application/json, text/plain, */*",
+				"Cache-Control": "no-cache",
+				"X-XSRF-TOKEN": xsrf_token
+			},
+			dataType: "json",
+			success: function (data) {
+				console.log(data.result);
+				$("#commentsBox").html("<h5>COMMENTS</h5>");
+				if (data.result.comments && Array.isArray(data.result.comments)) {
+					data.result.comments.forEach(function(v) {
+						$("#commentsBox").append("<div>");
+						var commentDate = v.createdAt.split("T")[0];
+						// commentDate.getFullYear()+"."+(commentDate.getMonth()+1)+"."+commentDate.getDay()
+						var commentTime = v.createdAt.split("T")[1].substring(0, 8);
+						var commentAuthor = "unknown";
+						if (data.result.users && Array.isArray(data.result.users)) {
+							data.result.users.forEach(function(u) {
+								if (u.id == v.authorId) {
+									commentAuthor = u.displayName;
+								}
+							});
+						}
+						$("#commentsBox")
+							.append("<span>"+commentDate+" | "+commentTime+" by "+commentAuthor+"</span>&nbsp;")
+							.append('<small><a href="#" class="bjb-link-arrow" onclick="deleteComment('+v.id+');">Del</a></small>')
+							.append("<p>"+v.text+"</p>")
+							.append("</div>");
+					});
+				}
+			}
+		});			
+	} else {
+		console.log("fetching comments not possible");
+	}
+}
+
+function deleteComment(id) {
+	if (xsrf_token) {
+		$.ajax({
+			url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/newDeleteComment",
+			type: "post",
+			data: JSON.stringify({
+				"method": "newDeleteComment",
+				"params": { "commentId": id }
+			}),
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+				"Accept": "application/json, text/plain, */*",
+				"Cache-Control": "no-cache",
+				"X-XSRF-TOKEN": xsrf_token
+			},
+			dataType: "json",
+			success: function (data) {
+				// console.log(data);
+				updateComments();
+			}
+		});
+	} else {
+		console.log("deleting comment not possible");
+	}
+}
+
+function addComment() {
+	if (xsrf_token) {
+		$.ajax({
+			url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/newCreateComment",
+			type: "post",
+			data: JSON.stringify({
+				"method": "newCreateComment",
+				"params": {
+					"commentableId": viewId,
+					"commentableType": "VIEW",
+					"text": $("#newCommentInput").val()
+				}
+			}),
+			headers: {
+				"Content-Type": "application/json;charset=UTF-8",
+				"Accept": "application/json, text/plain, */*",
+				"Cache-Control": "no-cache",
+				"X-XSRF-TOKEN": xsrf_token
+			},
+			dataType: "json",
+			success: function (data) {
+				// console.log(data);
+				$("#newCommentInput").val('');
+				updateComments();
+			}
+		});
+	} else {
+		console.log("adding comment not possible");
 	}
 }
 
