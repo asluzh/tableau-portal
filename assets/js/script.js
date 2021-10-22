@@ -31,9 +31,9 @@ function startViz(url, refresh)
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 
 	if (url === '') {
-		tableau_url = tableau_url + "t/JB-CH/views/Navigation/Home?:render=false&:refresh=yes";
+		tableau_url = tableau_url + "t/JB-CH/views/Navigation/Home?:refresh=yes";
 		if (navUrl) {
-			tableau_url = navUrl;
+			tableau_url = navUrl + (navUrl.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 			navUrl = null;
 		}
 		isHome = true;
