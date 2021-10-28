@@ -42,6 +42,7 @@ function startViz(url, refresh)
 		responsiveViz = false;
 		workbookId = null;
 		workbookIsFavorite = false;
+		deviceType = "desktop";
 	} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
@@ -472,7 +473,7 @@ function toggleDevice()
 			$("#vizContainer").width(newWidth);
 			$("#vizContainer").height(newHeight);
 			deviceType = "tablet";
-			$("#deviceType").text("Tablet");
+			$("#deviceType").text("Laptop");
 		} else {
 			newWidth = window.screen.width;
 			newHeight = window.screen.height - $("#portalHeader").height()-200;
