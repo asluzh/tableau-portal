@@ -43,7 +43,8 @@ function startViz(url, refresh)
 		workbookId = null;
 		workbookIsFavorite = false;
 		deviceType = "desktop";
-	} else {
+		$("#deviceType").text("Desktop");
+} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
 		isHome = false;
@@ -244,6 +245,9 @@ function startViz(url, refresh)
 		$("#toggleFavoriteItem").hide();
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
+		$("#exportToExcelItem").hide();
+		$("#toggleDeviceItem").hide();
+		$("#toggleCommentsItem").hide();
 		$("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
 	} else {
 		// $("#usernameItem").show();
