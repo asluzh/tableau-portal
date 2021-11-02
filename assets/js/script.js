@@ -16,9 +16,10 @@ var sessionInfo;
 var xsrf_token;
 
 var tableau_protocol = window.location.protocol;
-// tableau_protocol = "https:"; // override for testing
+tableau_protocol = "https:"; // override for testing
 var tableau_host = window.location.host;
-// tableau_host = "taluat1"; // override for testing
+tableau_host = "10ax.online.tableau.com"; // override for testing
+var default_url = "t/sandboxasldev331657/views/Navigation/Home"; // override for testing
 
 var exportToExcelMatch = /excel/ig;
 var printToPdfMatch = /#print/ig;
@@ -31,7 +32,7 @@ function startViz(url, refresh)
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 
 	if (url === '') {
-		tableau_url = tableau_url + "t/JB-CH/views/Navigation/Home?:refresh=yes";
+		tableau_url = tableau_url + default_url + "?:refresh=yes";
 		if (navUrl) {
 			tableau_url = navUrl + (navUrl.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 			navUrl = null;
