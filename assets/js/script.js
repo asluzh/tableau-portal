@@ -16,10 +16,10 @@ var sessionInfo;
 var xsrf_token;
 
 var tableau_protocol = window.location.protocol;
-tableau_protocol = "https:"; // override for testing
+//tableau_protocol = "https:"; // override for testing
 var tableau_host = window.location.host;
-tableau_host = "10ax.online.tableau.com"; // override for testing
-var default_url = "t/sandboxasldev331657/views/Navigation/Home"; // override for testing
+//tableau_host = "tableau-portal.westeurope.cloudapp.azure.com"; // override for testing
+var default_url = "views/Portal/Home"; // override for testing
 
 var exportToExcelMatch = /excel/ig;
 var printToPdfMatch = /#print/ig;
@@ -315,10 +315,14 @@ function onUrlAction(urlActionEvent) {
 	console.log("url action event");
 	var url = urlActionEvent.getUrl();
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
-	if (url.match(new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") ))) {
-		startViz(url);
-	} else {
+	var portal_url = tableau_url + "start.html";
+	var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+	var regexContentUrlPortal = new RegExp( "^" + portal_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+	console.log(regexContentUrl);
+	if (url.match(regexContentUrlPortal) || !url.match(regexContentUrl)) {
 		window.open(url, "_blank");
+	} else {
+		startViz(url); // open within the existing tab
 	}
 }
 
