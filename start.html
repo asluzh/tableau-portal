@@ -7,8 +7,8 @@
 
 	<title>Tableau Portal</title>
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
-	<link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css">
-	<link rel="stylesheet" href="assets/css/sprites.css">
+	<!-- <link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css"> -->
+	<!-- <link rel="stylesheet" href="assets/css/sprites.css"> -->
 
 	<style type="text/css">
 		#vizContainer {
@@ -32,16 +32,16 @@
 </head>
 
 <body>
-<header class="bjb-header" id="portalHeader">
+<header class="header" id="portalHeader">
 <!-- <div class="bjb-content"> -->
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-2 text-left bjb-logo my-2">
-			<img alt="Portal Logo" src="assets/img/portal-logo.svg" height="30">
+			<div class="col-2 text-left my-2">
+			<img alt="Portal Logo" src="assets/img/portal-logo.svg" height="50">
 			</div>
 			<div class="col-2 d-flex pt-3"><h4>Tableau Portal</h4></div>
 			<div class="col-6 d-flex pt-3">
-			<nav class="row navbar navbar-expand-lg bjb-navigation">
+			<nav class="row navbar navbar-expand-lg">
 					<div>
 						<ul class="col list-inline mr-auto justify-content-center collapse navbar-collapse">
 							<li class="list-inline-item nav-item" id="usernameItem" style="display: none;"><span class="icon_user" id="iconUsername"></span><img id="imgUsername" src="" style="border-radius: 50%; width: 20px; height: 20px; object-fit: cover; display: none;">&nbsp;&nbsp;<span id="textUsername"></span>&nbsp;&nbsp;&nbsp;</li>
@@ -64,18 +64,18 @@
 	</div><!-- /.container-fluid -->
 <!-- </div> -->
 </header>
-<div id="mainContent" style="display: flex; background-color: #F3F3F3;">
+<div id="mainContent" style="display: flex;">
 	<div align="center" id="vizContainer" role="main" style="flex: 1 1 0%; display: block; position: relative;"></div>
 	<div id="vizComments" role="complementary" style="flex: 0 0 320px; display: none; order: 2; position: relative;">
-		<div class="bjb-layout-boxes mw-400 bjb-rss-box" id="commentsBox"></div>
-		<div class="bjb-form">
+		<div class="mw-400" id="commentsBox"></div>
+		<div>
 			<div class="form-group">
 				<label for="newCommentInput">Add Comment</label>
 				<input type="text" class="form-control" id="newCommentInput" size="10" />
 			</div>
 			<a href="#" class="btn btn-primary" onclick="addComment();">Add</a>
 			<div class="float-right">
-				<small><a href="#" class="bjb-link-arrow" onclick="updateComments();">Refresh</a></small>
+				<small><a href="#" class="btn" onclick="updateComments();">Refresh</a></small>
 			</div>
 		</div>
 	</div>
