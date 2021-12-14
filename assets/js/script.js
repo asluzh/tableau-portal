@@ -14,12 +14,12 @@ var workbookId;
 var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
+var portal_home = "Home";
 
 var tableau_protocol = window.location.protocol;
 //tableau_protocol = "https:"; // override for testing
 var tableau_host = window.location.host;
 //tableau_host = "tableau-portal.westeurope.cloudapp.azure.com"; // override for testing
-var default_url = "views/Portal/Home"; // override for testing
 
 var exportToExcelMatch = /excel/ig;
 var printToPdfMatch = /#print/ig;
@@ -32,7 +32,7 @@ function startViz(url, refresh)
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 
 	if (url === '') {
-		tableau_url = tableau_url + default_url + "?:refresh=yes";
+		tableau_url = tableau_url + "views/Portal/" + portal_home + "?:refresh=yes";
 		if (navUrl) {
 			tableau_url = navUrl + (navUrl.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 			navUrl = null;
@@ -335,6 +335,10 @@ function initPage()
 	$("#vizContainer").width(newWidth);
 
 	vizDiv = document.getElementById("vizContainer");
+	const urlParams = new URLSearchParams(window.location.search);
+	if (urlParams.has('portal')) {
+		portal_home = urlParams.get('portal');
+	}
 	if (window.location.hash.length > 2) {
 //		console.log("Stripping out hashes");
 		var view = window.location.hash.substr(2);
