@@ -209,8 +209,8 @@ function startViz(url, refresh)
 								data.result.workbooks.forEach(function(v) {
 									if (v.id == workbookId) {
 										workbookIsFavorite = true;
-										console.log("This workbook marked as favorite");
-										// $("#iconAddRemoveFavorite").html("&#x2605;");
+										// console.log("This workbook marked as favorite");
+										$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
 									}
 								});
 							}
@@ -255,7 +255,7 @@ function startViz(url, refresh)
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
 		$("#goBackItem").hide();
-		// $("#iconAddRemoveFavorite").html("&#x2606;");
+		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
@@ -642,8 +642,8 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					console.log("Workbook removed from favorites");
-					// $("#iconAddRemoveFavorite").html("&#x2606;");
+					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
+					alert("The workbook has been added to Favorites");
 				}
 			});
 		} else {
@@ -664,9 +664,8 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					console.log("Workbook added to favorites");
-					// $("#iconAddRemoveFavorite").html("&#x2605;");
-					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
+					$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+					alert("The workbook has been added to Favorites");
 				}
 			});
 		}
