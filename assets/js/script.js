@@ -52,6 +52,7 @@ function startViz(url, refresh)
 		if (refresh) {
 			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 		}
+		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
 		if (Array.isArray(favoriteWorkbooks)) {
 			favoriteWorkbooks.forEach(function(v) {
 				if (v.id == workbookId) {
@@ -258,7 +259,6 @@ function startViz(url, refresh)
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
 		$("#goBackItem").hide();
-		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
