@@ -642,8 +642,8 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
-					alert("The workbook has been added to Favorites");
+					$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+					alert("The workbook has been removed from Favorites");
 				}
 			});
 		} else {
@@ -664,7 +664,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
 					alert("The workbook has been added to Favorites");
 				}
 			});
