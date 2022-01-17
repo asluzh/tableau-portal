@@ -96,7 +96,7 @@ function startViz(url, refresh)
 			var serverUserId;
 			if (xsrf_token_match) {
 				xsrf_token = xsrf_token_match[1];
-				console.log("xsrf_token = " + xsrf_token);
+				// console.log("xsrf_token = " + xsrf_token);
 			}
 			if (xsrf_token) {
 				if (url === '') {
@@ -210,7 +210,8 @@ function startViz(url, refresh)
 								data.result.workbooks.forEach(function(v) {
 									if (v.id == workbookId) {
 										workbookIsFavorite = true;
-										$("#iconAddRemoveFavorite").html("&#x2605;");
+										console.log("This workbook marked as favorite");
+										// $("#iconAddRemoveFavorite").html("&#x2605;");
 									}
 								});
 							}
@@ -249,18 +250,18 @@ function startViz(url, refresh)
 		$("#exportToExcelItem").hide();
 		$("#toggleDeviceItem").hide();
 		$("#toggleCommentsItem").hide();
-		$("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
+		// $("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
 	} else {
 		// $("#usernameItem").show();
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
 		$("#goBackItem").hide();
-		$("#iconAddRemoveFavorite").html("&#x2606;");
+		// $("#iconAddRemoveFavorite").html("&#x2606;");
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
 		$("#exportPptItem").show();
-		$("#iconHome").removeClass("icon_home").addClass("icon_circle-round-up");
+		// $("#iconHome").removeClass("icon_home").addClass("icon_circle-round-up");
 	}
 }
 
@@ -642,7 +643,8 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					$("#iconAddRemoveFavorite").html("&#x2606;");
+					console.log("Workbook removed from favorites");
+					// $("#iconAddRemoveFavorite").html("&#x2606;");
 				}
 			});
 		} else {
@@ -663,7 +665,8 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					$("#iconAddRemoveFavorite").html("&#x2605;");
+					console.log("Workbook added to favorites");
+					// $("#iconAddRemoveFavorite").html("&#x2605;");
 					alert("The dashboard has been added to Favorites.\nThe list of favorites on Portal Home will be updated soon.");
 				}
 			});
