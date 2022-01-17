@@ -10,7 +10,6 @@ var showToolbar = false;
 var showTabs = false;
 var responsiveViz = false;
 var useComments = false;
-var workbookId;
 var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
@@ -206,8 +205,6 @@ function startViz(url, refresh)
 						},
 						dataType: "json",
 						success: function (data) {
-							console.log(data);
-							console.log(workbookId);
 							if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
 								data.result.workbooks.forEach(function(v) {
 									if (v.id == workbookId) {
