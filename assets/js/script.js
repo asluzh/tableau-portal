@@ -10,6 +10,7 @@ var showToolbar = false;
 var showTabs = false;
 var responsiveViz = false;
 var useComments = false;
+var favoriteWorkbooks;
 var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
@@ -44,12 +45,21 @@ function startViz(url, refresh)
 		workbookIsFavorite = false;
 		deviceType = "desktop";
 		$("#deviceType").text("Desktop");
-} else {
+	} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
 		isHome = false;
 		if (refresh) {
 			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
+		}
+		if (Array.isArray(favoriteWorkbooks)) {
+			favoriteWorkbooks.forEach(function(v) {
+				if (v.id == workbookId) {
+					workbookIsFavorite = true;
+					console.log("This workbook is marked as favorite");
+					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
+				}
+			});
 		}
 	}
 
@@ -98,7 +108,7 @@ function startViz(url, refresh)
 				// console.log("xsrf_token = " + xsrf_token);
 			}
 			if (xsrf_token) {
-				if (url === '') {
+				if (url === '') { // execute only for Portal Home
 					$.ajax({
 						url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getSessionInfo",
 						type: "post",
@@ -188,8 +198,7 @@ function startViz(url, refresh)
 								}
 							});
 						}
-					});
-				} else {
+					}); // getSessionInfo
 					$.ajax({
 						url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getFavorites",
 						type: "post",
@@ -206,16 +215,10 @@ function startViz(url, refresh)
 						dataType: "json",
 						success: function (data) {
 							if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
-								data.result.workbooks.forEach(function(v) {
-									if (v.id == workbookId) {
-										workbookIsFavorite = true;
-										// console.log("This workbook marked as favorite");
-										$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
-									}
-								});
+								favoriteWorkbooks = data.result.workbooks;
 							}
 						}
-					});
+					}); // getFavorites
 				}	
 			}
 		} // onFirstInteractive function
