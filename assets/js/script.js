@@ -206,6 +206,7 @@ function startViz(url, refresh)
 						},
 						dataType: "json",
 						success: function (data) {
+							console.log(data);
 							if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
 								data.result.workbooks.forEach(function(v) {
 									if (v.id == workbookId) {
@@ -623,7 +624,7 @@ function addComment() {
 
 function toggleFavorite()
 {
-	console.log("favorites button");
+	console.log("favorites button clicked");
 	if (viz && !isHome && xsrf_token && workbookId) {
 		if (workbookIsFavorite) {
 			console.log("remove from favorites");
