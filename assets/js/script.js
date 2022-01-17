@@ -207,6 +207,7 @@ function startViz(url, refresh)
 						dataType: "json",
 						success: function (data) {
 							console.log(data);
+							console.log(workbookId);
 							if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
 								data.result.workbooks.forEach(function(v) {
 									if (v.id == workbookId) {
