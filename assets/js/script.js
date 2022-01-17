@@ -96,7 +96,7 @@ function startViz(url, refresh)
 			var serverUserId;
 			if (xsrf_token_match) {
 				xsrf_token = xsrf_token_match[1];
-				// console.log("xsrf_token = " + xsrf_token);
+				console.log("xsrf_token = " + xsrf_token);
 			}
 			if (xsrf_token) {
 				if (url === '') {
