@@ -416,7 +416,7 @@ function resetViz()
 
 function restartViz()
 {
-	if (viz && !isHome) {
+	if (viz) {
 		startViz(contentUrl, true);
 	}
 }
