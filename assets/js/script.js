@@ -14,15 +14,6 @@ var favoriteWorkbooks;
 var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
-var portal_home = "Home";
-
-var tableau_protocol = window.location.protocol;
-//tableau_protocol = "https:"; // override for testing
-var tableau_host = window.location.host;
-//tableau_host = "tableau-portal.westeurope.cloudapp.azure.com"; // override for testing
-
-var exportToExcelMatch = /excel/ig;
-var printToPdfMatch = /#print/ig;
 
 function startViz(url, refresh)
 {
@@ -32,7 +23,7 @@ function startViz(url, refresh)
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 
 	if (url === '') {
-		tableau_url = tableau_url + "views/Portal/" + portal_home + "?:refresh=yes";
+		tableau_url = tableau_url + portal_home_url + "?:refresh=yes";
 		if (navUrl) {
 			tableau_url = navUrl + (navUrl.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 			navUrl = null;
@@ -339,8 +330,8 @@ function initPage()
 
 	vizDiv = document.getElementById("vizContainer");
 	const urlParams = new URLSearchParams(window.location.search);
-	if (urlParams.has('portal')) {
-		portal_home = urlParams.get('portal');
+	if (portal_remember_home && urlParams.has(portal_remember_home)) {
+		portal_home_url = urlParams.get(portal_remember_home);
 	}
 	if (window.location.hash.length > 2) {
 //		console.log("Stripping out hashes");
@@ -362,13 +353,15 @@ function navigationSelectListener(marksEvent)
 	viz.getCurrentUrlAsync().then(function(url) {
 		navUrl = url.substring(0, url.indexOf('?'));
 		viz.getWorkbook().getParametersAsync().then(function(params) {
-			var current_topic = "";
+			var param_value = "";
 			for (var i = 0; i < params.length; i++) {
-				if (params[i].getName() == "CurrentTopic") {
-					current_topic = params[i].getCurrentValue().value;
+				if (params[i].getName() == portal_remember_parameter) {
+					param_value = params[i].getCurrentValue().value;
 				} 
 			}
-			navUrl += "?CurrentTopic=" + current_topic;
+			if (portal_remember_parameter && param_value) {
+				navUrl += "?"+portal_remember_parameter+"=" + param_value;
+			}
 			marksEvent.getMarksAsync().then(function(marks) {
 				var selectedViz;
 				if (marks.length == 1) {
