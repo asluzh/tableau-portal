@@ -328,7 +328,7 @@ function initPage()
 {
 	var newHeight = window.screen.height - $("#portalHeader").height()-200; // 200 is sufficient buffer space to reserve for menubar, statusbar, favorites, etc.
 	var newWidth = window.screen.width;
-	timezone_offset = new Date().getTimezoneOffset;
+	timezone_offset = new Date().getTimezoneOffset();
 
 	$("#vizContainer").height(newHeight);
 	$("#vizContainer").width(newWidth);
