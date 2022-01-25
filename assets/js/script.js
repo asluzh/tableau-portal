@@ -14,6 +14,7 @@ var favoriteWorkbooks;
 var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
+var timezone_offset;
 
 function startViz(url, refresh)
 {
@@ -70,6 +71,9 @@ function startViz(url, refresh)
 				viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 				viz.addEventListener(tableau.TableauEventName.URL_ACTION, onUrlAction);
 				// useComments = true;
+				if (typeof pass_param_tzoffset === "string" && pass_param_tzoffset.length > 0) {
+					console.log("setting "+pass_param_tzoffset+" = "+timezone_offset);
+				}
 			}
 			$('#vizContainer').css("background-image", "none");
 			// $('#vizContainer iframe').css("margin-left", "100px");
@@ -324,6 +328,7 @@ function initPage()
 {
 	var newHeight = window.screen.height - $("#portalHeader").height()-200; // 200 is sufficient buffer space to reserve for menubar, statusbar, favorites, etc.
 	var newWidth = window.screen.width;
+	timezone_offset = new Date().getTimezoneOffset;
 
 	$("#vizContainer").height(newHeight);
 	$("#vizContainer").width(newWidth);
@@ -353,15 +358,15 @@ function navigationSelectListener(marksEvent)
 	viz.getCurrentUrlAsync().then(function(url) {
 		navUrl = url.substring(0, url.indexOf('?'));
 		viz.getWorkbook().getParametersAsync().then(function(params) {
-			if (typeof portal_remember_parameter === "string" && portal_remember_parameter.length > 0) {
+			if (typeof portal_remember_param === "string" && portal_remember_param.length > 0) {
 				var param_value = "";
 				for (var i = 0; i < params.length; i++) {
-					if (params[i].getName() == portal_remember_parameter) {
+					if (params[i].getName() == portal_remember_param) {
 						param_value = params[i].getCurrentValue().value;
 					} 
 				}
 				if (param_value) {
-					navUrl += "?"+portal_remember_parameter+"=" + param_value;
+					navUrl += "?"+portal_remember_param+"=" + param_value;
 				}
 			}
 			marksEvent.getMarksAsync().then(function(marks) {
