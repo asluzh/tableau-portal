@@ -330,8 +330,8 @@ function initPage()
 
 	vizDiv = document.getElementById("vizContainer");
 	const urlParams = new URLSearchParams(window.location.search);
-	if (portal_remember_home && urlParams.has(portal_remember_home)) {
-		portal_home_url = urlParams.get(portal_remember_home);
+	if (typeof portal_custom_home === "string" && portal_custom_home.length > 0 && urlParams.has(portal_custom_home)) {
+		portal_home_url = urlParams.get(portal_custom_home);
 	}
 	if (window.location.hash.length > 2) {
 //		console.log("Stripping out hashes");
@@ -353,14 +353,16 @@ function navigationSelectListener(marksEvent)
 	viz.getCurrentUrlAsync().then(function(url) {
 		navUrl = url.substring(0, url.indexOf('?'));
 		viz.getWorkbook().getParametersAsync().then(function(params) {
-			var param_value = "";
-			for (var i = 0; i < params.length; i++) {
-				if (params[i].getName() == portal_remember_parameter) {
-					param_value = params[i].getCurrentValue().value;
-				} 
-			}
-			if (portal_remember_parameter && param_value) {
-				navUrl += "?"+portal_remember_parameter+"=" + param_value;
+			if (typeof portal_remember_parameter === "string" && portal_remember_parameter.length > 0) {
+				var param_value = "";
+				for (var i = 0; i < params.length; i++) {
+					if (params[i].getName() == portal_remember_parameter) {
+						param_value = params[i].getCurrentValue().value;
+					} 
+				}
+				if (param_value) {
+					navUrl += "?"+portal_remember_parameter+"=" + param_value;
+				}
 			}
 			marksEvent.getMarksAsync().then(function(marks) {
 				var selectedViz;
@@ -395,9 +397,9 @@ function navigationSelectListener(marksEvent)
 				if (selectedViz) {
 					startViz(selectedViz);
 				}
-			});
-		});
-	});
+			}); // getMarksAsync
+		}); // getParametersAsync
+	}); // getCurrentUrlAsync
 }
 
 function resetViz()
