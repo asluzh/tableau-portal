@@ -73,6 +73,13 @@ function startViz(url, refresh)
 				// useComments = true;
 				if (typeof pass_param_tzoffset === "string" && pass_param_tzoffset.length > 0) {
 					console.log("setting "+pass_param_tzoffset+" = "+timezone_offset);
+					viz.getWorkbook().getParametersAsync().then(function(params) {
+						for (var i = 0; i < params.length; i++) {
+							if (params[i].getName() == pass_param_tzoffset) {
+								viz.getWorkbook().changeParameterValueAsync(pass_param_tzoffset, timezone_offset);
+							} 
+						}
+					});
 				}
 			}
 			$('#vizContainer').css("background-image", "none");
