@@ -1,0 +1,68 @@
+<!doctype HTML>
+<html lang="en">
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+
+	<title>Global Risk Analytics</title>
+	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/bjb-bootstrap.min.css">
+	<link rel="stylesheet" href="assets/css/sprites.css">
+
+	<style type="text/css">
+		#vizContainer {
+			background-image: url(assets/img/bg-welcome-image.jpg);
+			background-repeat: no-repeat;
+			margin: 0 0;
+			width: 1680px;
+			height: 1110px;
+		}
+		body {
+			background-color: #fff;
+		}
+	</style>
+
+	<script src="assets/js/jquery.min.js"></script>
+	<script src="assets/js/bootstrap.bundle.min.js"></script>
+	<script src="/javascripts/api/tableau-2.js"></script>
+	<script src="assets/js/settings-bjb.js"></script>
+	<script src="assets/js/script.js"></script>
+
+</head>
+
+<body>
+<header class="header" id="portalHeader">
+<!-- <div class="bjb-content"> -->
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-2 text-left my-2">
+			<img alt="Portal Logo" src="assets/img/juliusbaer-logo.svg" height="30">
+			</div>
+			<div class="col-2 d-flex pt-3"><h5>Global Risk Analytics</h5></div>
+			<div class="col-6 d-flex pt-3">
+			<nav class="row navbar navbar-expand-lg bjb-navigation">
+					<div>
+						<ul class="col list-inline mr-auto justify-content-center collapse navbar-collapse">
+							<li class="list-inline-item nav-item" id="usernameItem" style="display: none;"><img id="imgUsername" src="" style="border-radius: 50%; width: 20px; height: 20px; object-fit: cover; display: none;" />&nbsp;&nbsp;<span id="textUsername"></span>&nbsp;</li>
+							<li class="list-inline-item nav-item"><a href="#" class="nav-link" onclick="startViz('');"><span class="icon_home" id="iconHome"></span>&nbsp;&nbsp;Portal</a></li>
+							<li class="list-inline-item nav-item" id="undoVizItem"><a href="#" class="nav-link" onclick="undoViz();"><span class="icon_circle-round-left"></span>&nbsp;&nbsp;Undo</a></li>
+							<li class="list-inline-item nav-item" id="goBackItem"><a href="#" class="nav-link" onclick="goBackViz();"><span class="icon_circle-round-left"></span>&nbsp;&nbsp;Go&nbsp;Back</a></li>
+							<li class="list-inline-item nav-item" id="redoVizItem"><a href="#" class="nav-link" onclick="redoViz();"><span class="icon_circle-round-right"></span>&nbsp;&nbsp;Redo</a></li>
+							<li class="list-inline-item nav-item" id="restartVizItem" style="display: none;"><a href="#" class="nav-link" onclick="restartViz();"><span class="icon_refresh"></span>&nbsp;&nbsp;Reload</a></li>
+							<li class="list-inline-item nav-item" id="toggleDeviceItem" style="display: none;"><a href="#" class="nav-link" onclick="toggleDevice();"><span class="icon_screen-hd"></span>&nbsp;&nbsp;<span id="deviceType">Desktop</span></a></li>
+							<li class="list-inline-item nav-item" id="toggleFavoriteItem" style="display: none;"><a href="#" class="nav-link" onclick="toggleFavorite();"><span id="iconFavorite" class="bi-star"></span>&nbsp;&nbsp;Favorite</a></li>
+							<li class="list-inline-item nav-item" id="exportPdfItem" style="display: none;"><a href="#" class="nav-link" onclick="exportPdfDlg();"><span class="icon_print"></span>&nbsp;&nbsp;Export&nbsp;PDF</a></li>
+							<li class="list-inline-item nav-item" id="exportPptItem" style="display: none;"><a href="#" class="nav-link" onclick="exportPptDlg();"><span class="icon_blackboard"></span>&nbsp;&nbsp;Export&nbsp;PPT</a></li>
+							<li class="list-inline-item nav-item" id="exportToExcelItem" style="display: none;"><a href="#" class="nav-link" onclick="exportCrosstabDlg();"><span class="icon_download"></span>&nbsp;&nbsp;Export&nbsp;Excel</a></li>
+						</ul>
+					</div>
+				</nav>
+			</div>
+		</div>
+	</div><!-- /.container-fluid -->
+<!-- </div> -->
+</header>
+	<div align="center" id="vizContainer"></div>
+</body>
+</html> 
