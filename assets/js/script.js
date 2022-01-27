@@ -75,10 +75,19 @@ function startViz(url, refresh)
 					var wb = viz.getWorkbook();
 					wb.getParametersAsync().then(function(params) {
 						for (var i = 0; i < params.length; i++) {
-							if (params[i].getName() == pass_param_tzoffset) {
-								console.log("setting "+pass_param_tzoffset+" = "+timezone_offset);
-								console.log(params[i].getAllowableValuesType());
-								wb.changeParameterValueAsync(pass_param_tzoffset, timezone_offset);
+							if (params[i].getName() == pass_param_tzoffset) {			
+								if (params[i].getAllowableValuesType() === tableau.ParameterAllowableValuesType.LIST) {
+									var param_values = params[i].getAllowableValues();
+									for (var j = 0; j < param_values.length; j++) {
+										if (param_values[j].value == timezone_offset) {
+											console.log("setting "+pass_param_tzoffset+" = "+param_values[j].formattedValue);
+											wb.changeParameterValueAsync(pass_param_tzoffset, param_values[j].formattedValue);
+										}
+									}
+								} else {
+									console.log("setting "+pass_param_tzoffset+" = "+timezone_offset);
+									wb.changeParameterValueAsync(pass_param_tzoffset, timezone_offset);
+								}
 							} 
 						}
 					});
