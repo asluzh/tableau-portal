@@ -77,6 +77,7 @@ function startViz(url, refresh)
 						for (var i = 0; i < params.length; i++) {
 							if (params[i].getName() == pass_param_tzoffset) {
 								console.log("setting "+pass_param_tzoffset+" = "+timezone_offset);
+								console.log(params[i].getAllowableValuesType());
 								wb.changeParameterValueAsync(pass_param_tzoffset, timezone_offset);
 							} 
 						}
