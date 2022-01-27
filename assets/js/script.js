@@ -115,7 +115,6 @@ function startViz(url, refresh)
 			}
 			var xsrf_token_regex = /XSRF-TOKEN=(.[^;]*)/ig;
 			var xsrf_token_match = xsrf_token_regex.exec(document.cookie);
-			var userLanguage = "en";
 			var serverUserId;
 			if (xsrf_token_match) {
 				xsrf_token = xsrf_token_match[1];
@@ -170,45 +169,46 @@ function startViz(url, refresh)
 								dataType: "json",
 								success: function (data) {
 									serverUserId = data.result.users[0].id;
-									$.ajax({
-										url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getUserSettings",
-										type: "post",
-										data: JSON.stringify({
-											"method": "getUserSettings",
-											"params": { "username": sessionInfo.user.username, "domainName": sessionInfo.user.domainName }
-										}),
-										headers: {
-											"Content-Type": "application/json;charset=UTF-8",
-											"Accept": "application/json, text/plain, */*",
-											"Cache-Control": "no-cache",
-											"X-XSRF-TOKEN": xsrf_token
-										},
-										dataType: "json",
-										success: function (data) {
-											if (data.result.language) {
-												console.log("User language setting: " + data.result.language);
-												// return; // comment out to enforce language=en
-											}
-											$.ajax({
-												url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/updateUserLanguage",
-												type: "post",
-												data: JSON.stringify({
-													"method": "updateUserLanguage",
-													"params": { "userId": serverUserId, "language": userLanguage }
-												}),
-												headers: {
-													"Content-Type": "application/json;charset=UTF-8",
-													"Accept": "application/json, text/plain, */*",
-													"Cache-Control": "no-cache",
-													"X-XSRF-TOKEN": xsrf_token
-												},
-												dataType: "json",
-												success: function (data) {
-													console.log("Updated user language setting: " + userLanguage);
+									if (typeof set_user_language === "string" && set_user_language.length > 0) {
+										$.ajax({
+											url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getUserSettings",
+											type: "post",
+											data: JSON.stringify({
+												"method": "getUserSettings",
+												"params": { "username": sessionInfo.user.username, "domainName": sessionInfo.user.domainName }
+											}),
+											headers: {
+												"Content-Type": "application/json;charset=UTF-8",
+												"Accept": "application/json, text/plain, */*",
+												"Cache-Control": "no-cache",
+												"X-XSRF-TOKEN": xsrf_token
+											},
+											dataType: "json",
+											success: function (data) {
+												if (data.result.language) {
+													console.log("Current user language setting: " + data.result.language);
 												}
-											});
-										}
-									});
+												$.ajax({
+													url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/updateUserLanguage",
+													type: "post",
+													data: JSON.stringify({
+														"method": "updateUserLanguage",
+														"params": { "userId": serverUserId, "language": set_user_language }
+													}),
+													headers: {
+														"Content-Type": "application/json;charset=UTF-8",
+														"Accept": "application/json, text/plain, */*",
+														"Cache-Control": "no-cache",
+														"X-XSRF-TOKEN": xsrf_token
+													},
+													dataType: "json",
+													success: function (data) {
+														console.log("Updated user language setting: " + set_user_language);
+													}
+												});
+											}
+										});
+									}
 								}
 							});
 						}
