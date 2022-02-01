@@ -16,6 +16,19 @@ var sessionInfo;
 var xsrf_token;
 var timezone_offset;
 
+// initialize customization variables and functions
+var tableau_protocol = window.location.protocol;
+var tableau_host = window.location.host;
+var portal_home_url = "views/Portal/Home"; // partial URL for the Portal home page
+var portal_custom_home = ""; // optional, specifies URL parameter which specifies alternative portal home location
+var portal_remember_param = ""; // optional, defines Tableau parameter for remembering portal location
+var pass_param_tzoffset = ""; // optional, parameter that captures time zone offset in minutes
+var set_user_language = ""; // optional, if defined, specifies language code that is updated in user settings on each log in
+var substr_export_to_excel = "#excel"; // optional, substring for matching to enable Export to Excel
+var substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
+var setFavoriteIcon = function(){};
+var clearFavoriteIcon = function(){};
+
 function startViz(url, refresh)
 {
 	contentUrl = url;
@@ -44,13 +57,13 @@ function startViz(url, refresh)
 		if (refresh) {
 			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 		}
-		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+		clearFavoriteIcon();
 		if (Array.isArray(favoriteWorkbooks)) {
 			favoriteWorkbooks.forEach(function(v) {
 				if (v.id == workbookId) {
 					workbookIsFavorite = true;
 					console.log("This workbook is marked as favorite");
-					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
+					setFavoriteIcon();
 				}
 			});
 		}
@@ -71,7 +84,7 @@ function startViz(url, refresh)
 				viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 				viz.addEventListener(tableau.TableauEventName.URL_ACTION, onUrlAction);
 				// useComments = true;
-				if (typeof pass_param_tzoffset === "string" && pass_param_tzoffset.length > 0) {
+				if (pass_param_tzoffset.length > 0) {
 					var wb = viz.getWorkbook();
 					wb.getParametersAsync().then(function(params) {
 						for (var i = 0; i < params.length; i++) {
@@ -169,7 +182,7 @@ function startViz(url, refresh)
 								dataType: "json",
 								success: function (data) {
 									serverUserId = data.result.users[0].id;
-									if (typeof set_user_language === "string" && set_user_language.length > 0) {
+									if (set_user_language.length > 0) {
 										$.ajax({
 											url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getUserSettings",
 											type: "post",
@@ -283,14 +296,17 @@ function startViz(url, refresh)
 function getWorksheetForExcelExport() {
 	var vizsheet = viz.getWorkbook().getActiveSheet();
 	var ws = null;
-	if (vizsheet.getSheetType()==tableau.SheetType.DASHBOARD) {
-		vizsheet.getWorksheets().forEach(function(v) {
-			if (v.getName().match(exportToExcelMatch)) {
-				ws = v;
-			}
-		});
-	} else if (vizsheet.getSheetType()==tableau.SheetType.WORKSHEET && vizsheet.getName().match(exportToExcelMatch)) {
-		ws = vizsheet;
+	if (substr_export_to_excel.length > 0) {
+		var exportToExcelRegexp = new RegExp( "^" + substr_export_to_excel.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+		if (vizsheet.getSheetType()==tableau.SheetType.DASHBOARD) {
+			vizsheet.getWorksheets().forEach(function(v) {
+				if (v.getName().match(exportToExcelRegexp)) {
+					ws = v;
+				}
+			});
+		} else if (vizsheet.getSheetType()==tableau.SheetType.WORKSHEET && vizsheet.getName().match(exportToExcelRegexp)) {
+			ws = vizsheet;
+		}
 	}
 	return ws;
 }
@@ -307,7 +323,10 @@ function onTabSwitch(tabSwitchEvent) {
 	// console.log(newsheet);
 	// var sheets = viz.getWorkbook().getPublishedSheetsInfo();
 	// console.log(sheets);
-	if (newsheet.match(printToPdfMatch)) {
+	
+	if (substr_print_to_pdf.length > 0) {
+		var goToPrintPdfRegexp = new RegExp( "^" + substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+		if (newsheet.match(goToPrintPdfRegexp)) {
 		$("#undoVizItem").hide();
 		$("#redoVizItem").hide();
 		$("#goBackItem").show();
@@ -316,14 +335,15 @@ function onTabSwitch(tabSwitchEvent) {
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
 		exportPdfDlg();
-	} else {
-		$("#undoVizItem").show();
-		$("#redoVizItem").show();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		$("#exportPptItem").show();
+		} else {
+			$("#undoVizItem").show();
+			$("#redoVizItem").show();
+			$("#goBackItem").hide();
+			$("#restartVizItem").show();
+			$("#toggleFavoriteItem").show();
+			$("#exportPdfItem").show();
+			$("#exportPptItem").show();
+		}
 	}
 }
 
@@ -353,7 +373,7 @@ function initPage()
 
 	vizDiv = document.getElementById("vizContainer");
 	const urlParams = new URLSearchParams(window.location.search);
-	if (typeof portal_custom_home === "string" && portal_custom_home.length > 0 && urlParams.has(portal_custom_home)) {
+	if (portal_custom_home.length > 0 && urlParams.has(portal_custom_home)) {
 		portal_home_url = urlParams.get(portal_custom_home);
 	}
 	if (window.location.hash.length > 2) {
@@ -376,7 +396,7 @@ function navigationSelectListener(marksEvent)
 	viz.getCurrentUrlAsync().then(function(url) {
 		navUrl = url.substring(0, url.indexOf('?'));
 		viz.getWorkbook().getParametersAsync().then(function(params) {
-			if (typeof portal_remember_param === "string" && portal_remember_param.length > 0) {
+			if (portal_remember_param.length > 0) {
 				var param_value = "";
 				for (var i = 0; i < params.length; i++) {
 					if (params[i].getName() == portal_remember_param) {
@@ -663,8 +683,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
-					alert("The workbook has been removed from Favorites");
+					clearFavoriteIcon();
 				}
 			});
 		} else {
@@ -685,8 +704,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
-					alert("The workbook has been added to Favorites");
+					setFavoriteIcon();
 				}
 			});
 		}
