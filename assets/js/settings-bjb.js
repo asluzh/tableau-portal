@@ -8,49 +8,10 @@ set_user_language = "en"; // optional, if defined, specifies language code that 
 substr_export_to_excel = "excel"; // optional, substring for matching to enable Export to Excel
 substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
 
-setFavoriteIcon   = function() { $("#iconAddRemoveFavorite").html("&#x2605;"); }
-clearFavoriteIcon = function() { $("#iconAddRemoveFavorite").html("&#x2606;"); }
-
-onFirstInteractiveCall = function(url) {
-    $('#vizContainer').css("background-image", "none");
-	if (url === '') {
-		$("#undoVizItem").hide();
-		$("#redoVizItem").hide();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#exportPptItem").hide();
-		$("#exportToExcelItem").hide();
-		$("#toggleDeviceItem").hide();
-		$("#toggleCommentsItem").hide();
-        $("#deviceType").text("Desktop");
-		$("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
+updateFavoriteIcon = function() {
+	if (workbookIsFavorite) {
+		$("#iconAddRemoveFavorite").html("&#x2605;");
 	} else {
-		// $("#usernameItem").show();
-		$("#undoVizItem").show();
-		$("#redoVizItem").show();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		$("#exportPptItem").show();
-		$("#iconHome").removeClass("icon_home").addClass("icon_circle-round-up");
+		$("#iconAddRemoveFavorite").html("&#x2606;");
 	}
-    // $('#vizContainer iframe').css("margin-left", "100px");
-    if (getWorksheetForExportExcel()) {
-        $("#exportToExcelItem").show();
-    } else {
-        $("#exportToExcelItem").hide();
-    }
-    if (responsiveViz) {
-        $("#toggleDeviceItem").show();
-    } else {
-        $("#toggleDeviceItem").hide();
-    }
-    if (useComments) {
-        $("#toggleCommentsItem").show();
-    } else {
-        $("#toggleCommentsItem").hide();
-    }
 }

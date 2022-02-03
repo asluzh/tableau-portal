@@ -28,9 +28,13 @@ var substr_export_to_excel = "#excel"; // optional, substring for matching to en
 var substr_export_to_pdf = ""; // optional, substring for matching to enable Export to PDF
 var substr_export_to_ppt = ""; // optional, substring for matching to enable Export to PowerPoint
 var substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
-var setFavoriteIcon = function(){};
-var clearFavoriteIcon = function(){};
-var onFirstInteractiveCall = function(){};
+var updateFavoriteIcon = function() {
+	if (workbookIsFavorite) {
+		$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
+	} else {
+		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+	}
+}
 
 function startViz(url, refresh)
 {
@@ -58,16 +62,16 @@ function startViz(url, refresh)
 		if (refresh) {
 			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 		}
-		clearFavoriteIcon();
+		workbookIsFavorite = false;
 		if (Array.isArray(favoriteWorkbooks)) {
 			favoriteWorkbooks.forEach(function(v) {
 				if (v.id == workbookId) {
 					workbookIsFavorite = true;
 					console.log("This workbook is marked as favorite");
-					setFavoriteIcon();
 				}
 			});
 		}
+		updateFavoriteIcon();
 	}
 
 	console.log("url: " + tableau_url);
@@ -79,10 +83,48 @@ function startViz(url, refresh)
 		device: deviceType,
 		onFirstInteractive: function() {
 			console.log("onFirstInteractive");
+			$('#vizContainer').css("background-image", "none");
+			if (url === '') {
+				$("#undoVizItem").hide();
+				$("#redoVizItem").hide();
+				$("#goBackItem").hide();
+				$("#restartVizItem").show();
+				$("#toggleFavoriteItem").hide();
+				$("#exportPdfItem").hide();
+				$("#exportPptItem").hide();
+				$("#exportToExcelItem").hide();
+				$("#toggleDeviceItem").hide();
+				$("#toggleCommentsItem").hide();
+				$("#deviceType").text("Desktop");
+			} else {
+				// $("#usernameItem").show();
+				$("#undoVizItem").show();
+				$("#redoVizItem").show();
+				$("#goBackItem").hide();
+				$("#restartVizItem").show();
+				$("#toggleFavoriteItem").show();
+				$("#exportPdfItem").show();
+				$("#exportPptItem").show();
+			}
+			// $('#vizContainer iframe').css("margin-left", "100px");
+			if (getWorksheetForExportExcel()) {
+				$("#exportToExcelItem").show();
+			} else {
+				$("#exportToExcelItem").hide();
+			}
+			if (responsiveViz) {
+				$("#toggleDeviceItem").show();
+			} else {
+				$("#toggleDeviceItem").hide();
+			}
+			if (useComments) {
+				$("#toggleCommentsItem").show();
+			} else {
+				$("#toggleCommentsItem").hide();
+			}
 			if (refresh) {
 				viz.revertAllAsync();
 			}
-			onFirstInteractiveCall();
 			if (url === '') {
 				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener);
 			} else {
@@ -644,7 +686,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = false;
-					clearFavoriteIcon();
+					updateFavoriteIcon();
 				}
 			});
 		} else {
@@ -665,7 +707,7 @@ function toggleFavorite()
 				dataType: "json",
 				success: function (data) {
 					workbookIsFavorite = true;
-					setFavoriteIcon();
+					updateFavoriteIcon();
 				}
 			});
 		}
