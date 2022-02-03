@@ -8,7 +8,7 @@ set_user_language = "en"; // optional, if defined, specifies language code that 
 substr_export_to_excel = "excel"; // optional, substring for matching to enable Export to Excel
 substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
 
-updateFavoriteIcon = function() {
+updateFavoriteIcon = function() { // override default feature
 	if (workbookIsFavorite) {
 		$("#iconAddRemoveFavorite").html("&#x2605;");
 	} else {

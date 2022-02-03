@@ -30,9 +30,35 @@ var substr_export_to_ppt = ""; // optional, substring for matching to enable Exp
 var substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
 var updateFavoriteIcon = function() {
 	if (workbookIsFavorite) {
-		$("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill");
+		$("#toggleFavoriteIcon").removeClass("bi-star").addClass("bi-star-fill");
 	} else {
-		$("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill");
+		$("#toggleFavoriteIcon").addClass("bi-star").removeClass("bi-star-fill");
+	}
+}
+var updateNavbar = function() {
+	if (contentUrl === '') {
+		// $("#undoVizItem").hide();
+		$("#undoVizButton").addClass("disabled");
+		$("#redoVizItem").hide();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").hide();
+		$("#exportPdfItem").hide();
+		$("#exportPptItem").hide();
+		$("#exportExcelItem").hide();
+		$("#toggleDeviceItem").hide();
+		$("#toggleCommentsItem").hide();
+		$("#deviceType").text("Desktop");
+	} else {
+		// $("#usernameItem").show();
+		// $("#undoVizItem").show();
+		$("#undoVizButton").removeClass("disabled");
+		$("#redoVizItem").show();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+		$("#exportPdfItem").show();
+		$("#exportPptItem").show();
 	}
 }
 
@@ -75,6 +101,7 @@ function startViz(url, refresh)
 	}
 
 	console.log("url: " + tableau_url);
+	updateNavbar();
 
 	var vizOptions = {
 		hideTabs: true,
@@ -84,33 +111,11 @@ function startViz(url, refresh)
 		onFirstInteractive: function() {
 			console.log("onFirstInteractive");
 			$('#vizContainer').css("background-image", "none");
-			if (url === '') {
-				$("#undoVizItem").hide();
-				$("#redoVizItem").hide();
-				$("#goBackItem").hide();
-				$("#restartVizItem").show();
-				$("#toggleFavoriteItem").hide();
-				$("#exportPdfItem").hide();
-				$("#exportPptItem").hide();
-				$("#exportToExcelItem").hide();
-				$("#toggleDeviceItem").hide();
-				$("#toggleCommentsItem").hide();
-				$("#deviceType").text("Desktop");
-			} else {
-				// $("#usernameItem").show();
-				$("#undoVizItem").show();
-				$("#redoVizItem").show();
-				$("#goBackItem").hide();
-				$("#restartVizItem").show();
-				$("#toggleFavoriteItem").show();
-				$("#exportPdfItem").show();
-				$("#exportPptItem").show();
-			}
 			// $('#vizContainer iframe').css("margin-left", "100px");
 			if (getWorksheetForExportExcel()) {
-				$("#exportToExcelItem").show();
+				$("#exportExcelItem").show();
 			} else {
-				$("#exportToExcelItem").hide();
+				$("#exportExcelItem").hide();
 			}
 			if (responsiveViz) {
 				$("#toggleDeviceItem").show();
@@ -317,9 +322,9 @@ function getWorksheetForExportExcel() {
 function onTabSwitch(tabSwitchEvent) {
 	console.log("tab switch event");
 	if (getWorksheetForExportExcel()) {
-		$("#exportToExcelItem").show();
+		$("#exportExcelItem").show();
 	} else {
-		$("#exportToExcelItem").hide();
+		$("#exportExcelItem").hide();
 	}
 	var newsheet = tabSwitchEvent.getNewSheetName();
 	// ASL TODO: get new view id for comments feature
@@ -330,14 +335,14 @@ function onTabSwitch(tabSwitchEvent) {
 	if (substr_print_to_pdf.length > 0) {
 		var goToPrintPdfRegexp = new RegExp( "^" + substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		if (newsheet.match(goToPrintPdfRegexp)) {
-		$("#undoVizItem").hide();
-		$("#redoVizItem").hide();
-		$("#goBackItem").show();
-		$("#restartVizItem").hide();
-		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#exportPptItem").hide();
-		exportPdfDlg();
+			$("#undoVizItem").hide();
+			$("#redoVizItem").hide();
+			$("#goBackItem").show();
+			$("#restartVizItem").hide();
+			$("#toggleFavoriteItem").hide();
+			$("#exportPdfItem").hide();
+			$("#exportPptItem").hide();
+			exportPdfDlg();
 		} else {
 			$("#undoVizItem").show();
 			$("#redoVizItem").show();
