@@ -11,7 +11,7 @@ substr_print_to_pdf = "#print"; // optional, substring for matching to enable Pr
 setFavoriteIcon   = function() { $("#iconAddRemoveFavorite").html("&#x2605;"); }
 clearFavoriteIcon = function() { $("#iconAddRemoveFavorite").html("&#x2606;"); }
 
-onFirstInteractiveCall = function() {
+onFirstInteractiveCall = function(url) {
     $('#vizContainer').css("background-image", "none");
 	if (url === '') {
 		$("#undoVizItem").hide();

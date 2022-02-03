@@ -11,7 +11,7 @@
 setFavoriteIcon   = function() { $("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill"); }
 clearFavoriteIcon = function() { $("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill"); }
 
-onFirstInteractiveCall = function() {
+onFirstInteractiveCall = function(url) {
 	if (url === '') {
 		$("#undoVizItem").hide();
 		$("#redoVizItem").hide();
