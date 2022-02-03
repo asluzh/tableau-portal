@@ -36,29 +36,26 @@ var updateFavoriteIcon = function() {
 	}
 }
 var updateNavbar = function() {
-	if (contentUrl === '') {
-		// $("#undoVizItem").hide();
+	if (contentUrl === '') { // disable buttons for Portal Home
 		$("#undoVizButton").addClass("disabled");
-		$("#redoVizItem").hide();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#exportPptItem").hide();
-		$("#exportExcelItem").hide();
-		$("#toggleDeviceItem").hide();
-		$("#toggleCommentsItem").hide();
-		$("#deviceType").text("Desktop");
-	} else {
-		// $("#usernameItem").show();
-		// $("#undoVizItem").show();
+		$("#redoVizButton").addClass("disabled");
+		$("#restartVizButton").addClass("disabled");
+		$("#toggleFavoriteButton").addClass("disabled");
+		$("#exportPdfButton").addClass("disabled");
+		$("#exportPptButton").addClass("disabled");
+		$("#exportExcelButton").addClass("disabled");
+		$("#toggleDeviceButton").addClass("disabled");
+		$("#toggleCommentsButton").addClass("disabled");
+	} else { // enable buttons for other workbooks
 		$("#undoVizButton").removeClass("disabled");
-		$("#redoVizItem").show();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		$("#exportPptItem").show();
+		$("#redoVizButton").removeClass("disabled");
+		$("#restartVizButton").removeClass("disabled");
+		$("#toggleFavoriteButton").removeClass("disabled");
+		$("#exportPdfButton").removeClass("disabled");
+		$("#exportPptButton").removeClass("disabled");
+		$("#exportExcelButton").removeClass("disabled");
+		$("#toggleDeviceButton").removeClass("disabled");
+		$("#toggleCommentsButton").removeClass("disabled");
 	}
 }
 
