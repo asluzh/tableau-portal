@@ -25,14 +25,16 @@ var portal_remember_param = ""; // optional, defines Tableau parameter for remem
 var pass_param_tzoffset = ""; // optional, parameter that captures time zone offset in minutes
 var set_user_language = ""; // optional, if defined, specifies language code that is updated in user settings on each log in
 var substr_export_to_excel = "#excel"; // optional, substring for matching to enable Export to Excel
+var substr_export_to_pdf = ""; // optional, substring for matching to enable Export to PDF
+var substr_export_to_ppt = ""; // optional, substring for matching to enable Export to PowerPoint
 var substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
 var setFavoriteIcon = function(){};
 var clearFavoriteIcon = function(){};
+var onFirstInteractiveCall = function(){};
 
 function startViz(url, refresh)
 {
 	contentUrl = url;
-	// console.log("contentUrl: " + contentUrl);
 
 	var tableau_url = tableau_protocol + "//" + tableau_host + "/";
 
@@ -49,7 +51,6 @@ function startViz(url, refresh)
 		workbookId = null;
 		workbookIsFavorite = false;
 		deviceType = "desktop";
-		$("#deviceType").text("Desktop");
 	} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
@@ -78,6 +79,10 @@ function startViz(url, refresh)
 		device: deviceType,
 		onFirstInteractive: function() {
 			console.log("onFirstInteractive");
+			if (refresh) {
+				viz.revertAllAsync();
+			}
+			onFirstInteractiveCall();
 			if (url === '') {
 				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener);
 			} else {
@@ -105,26 +110,6 @@ function startViz(url, refresh)
 						}
 					});
 				}
-			}
-			$('#vizContainer').css("background-image", "none");
-			// $('#vizContainer iframe').css("margin-left", "100px");
-			if (refresh) {
-				viz.revertAllAsync();
-			}
-			if (getWorksheetForExcelExport()) {
-				$("#exportToExcelItem").show();
-			} else {
-				$("#exportToExcelItem").hide();
-			}
-			if (responsiveViz) {
-				$("#toggleDeviceItem").show();
-			} else {
-				$("#toggleDeviceItem").hide();
-			}
-			if (useComments) {
-				$("#toggleCommentsItem").show();
-			} else {
-				$("#toggleCommentsItem").hide();
 			}
 			var xsrf_token_regex = /XSRF-TOKEN=(.[^;]*)/ig;
 			var xsrf_token_match = xsrf_token_regex.exec(document.cookie);
@@ -267,33 +252,9 @@ function startViz(url, refresh)
 
 	vizDiv.innerHTML = "";
 	viz = new tableau.Viz(vizDiv, tableau_url, vizOptions);
-
-	if (url === '') {
-		$("#undoVizItem").hide();
-		$("#redoVizItem").hide();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#exportPptItem").hide();
-		$("#exportToExcelItem").hide();
-		$("#toggleDeviceItem").hide();
-		$("#toggleCommentsItem").hide();
-		// $("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
-	} else {
-		// $("#usernameItem").show();
-		$("#undoVizItem").show();
-		$("#redoVizItem").show();
-		$("#goBackItem").hide();
-		$("#restartVizItem").show();
-		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		$("#exportPptItem").show();
-		// $("#iconHome").removeClass("icon_home").addClass("icon_circle-round-up");
-	}
 }
 
-function getWorksheetForExcelExport() {
+function getWorksheetForExportExcel() {
 	var vizsheet = viz.getWorkbook().getActiveSheet();
 	var ws = null;
 	if (substr_export_to_excel.length > 0) {
@@ -313,7 +274,7 @@ function getWorksheetForExcelExport() {
 
 function onTabSwitch(tabSwitchEvent) {
 	console.log("tab switch event");
-	if (getWorksheetForExcelExport()) {
+	if (getWorksheetForExportExcel()) {
 		$("#exportToExcelItem").show();
 	} else {
 		$("#exportToExcelItem").hide();
@@ -507,7 +468,7 @@ function exportCrosstabDlg()
 {
 	if (viz && !isHome) {
 		console.log("viz.showExportCrossTabDialog");
-		var ws = getWorksheetForExcelExport();
+		var ws = getWorksheetForExportExcel();
 		if (ws) {
 			viz.showExportCrossTabDialog(ws);
 		} else {

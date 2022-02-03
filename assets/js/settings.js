@@ -10,3 +10,44 @@
 
 setFavoriteIcon   = function() { $("#iconFavorite").removeClass("bi-star").addClass("bi-star-fill"); }
 clearFavoriteIcon = function() { $("#iconFavorite").addClass("bi-star").removeClass("bi-star-fill"); }
+
+onFirstInteractiveCall = function() {
+	if (url === '') {
+		$("#undoVizItem").hide();
+		$("#redoVizItem").hide();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").hide();
+		$("#exportPdfItem").hide();
+		$("#exportPptItem").hide();
+		$("#exportToExcelItem").hide();
+		$("#toggleDeviceItem").hide();
+		$("#toggleCommentsItem").hide();
+        $("#deviceType").text("Desktop");
+	} else {
+		// $("#usernameItem").show();
+		$("#undoVizItem").show();
+		$("#redoVizItem").show();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+		$("#exportPdfItem").show();
+		$("#exportPptItem").show();
+	}
+    // $('#vizContainer iframe').css("margin-left", "100px");
+    if (getWorksheetForExportExcel()) {
+        $("#exportToExcelItem").show();
+    } else {
+        $("#exportToExcelItem").hide();
+    }
+    if (responsiveViz) {
+        $("#toggleDeviceItem").show();
+    } else {
+        $("#toggleDeviceItem").hide();
+    }
+    if (useComments) {
+        $("#toggleCommentsItem").show();
+    } else {
+        $("#toggleCommentsItem").hide();
+    }
+}
