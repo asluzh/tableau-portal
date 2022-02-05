@@ -15,3 +15,26 @@ updateFavoriteIcon = function() { // override default feature
 		$("#iconAddRemoveFavorite").html("&#x2606;");
 	}
 }
+
+updateNavbar = function() { // previous default behavior, hide buttons
+	if (isPortalHome) {
+		$("#undoVizItem").hide();
+		$("#redoVizItem").hide();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").hide();
+		$("#exportPdfItem").hide();
+		$("#exportPptItem").hide();
+		$("#exportExcelItem").hide();
+		$("#toggleDeviceItem").hide();
+		$("#toggleCommentsItem").hide();
+	} else {
+		$("#undoVizItem").show();
+		$("#redoVizItem").show();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+		$("#exportPdfItem").show();
+		$("#exportPptItem").show();
+	}
+}

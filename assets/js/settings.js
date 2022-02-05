@@ -8,26 +8,23 @@
 // substr_export_to_excel = "#excel"; // optional, substring for matching to enable Export to Excel
 // substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
 
-// updateNavbar = function() { // previous default behavior
-// 	if (contentUrl === '') {
-// 		$("#undoVizItem").hide();
-// 		$("#redoVizItem").hide();
-// 		$("#goBackItem").hide();
-// 		$("#restartVizItem").show();
-// 		$("#toggleFavoriteItem").hide();
-// 		$("#exportPdfItem").hide();
-// 		$("#exportPptItem").hide();
-// 		$("#exportExcelItem").hide();
-// 		$("#toggleDeviceItem").hide();
-// 		$("#toggleCommentsItem").hide();
-// 		$("#deviceType").text("Desktop");
-// 	} else {
-// 		$("#undoVizItem").show();
-// 		$("#redoVizItem").show();
-// 		$("#goBackItem").hide();
-// 		$("#restartVizItem").show();
-// 		$("#toggleFavoriteItem").show();
-// 		$("#exportPdfItem").show();
-// 		$("#exportPptItem").show();
-// 	}
-// }
+updateNavbar = function() { // previous default behavior, hide buttons
+	if (isPortalHome) {
+		$("#undoVizItem").hide();
+		$("#redoVizItem").hide();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").hide();
+	} else {
+		$("#undoVizItem").show();
+		$("#redoVizItem").show();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+	}
+	$("#exportPdfItem").hide();
+	$("#exportPptItem").hide();
+	$("#exportExcelItem").hide();
+	$("#toggleDeviceItem").hide();
+	$("#toggleCommentsItem").hide();
+}

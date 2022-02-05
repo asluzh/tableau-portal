@@ -1,11 +1,10 @@
 var viz;
-var vizDiv;
 var contentUrl;
 var navUrl = null;
 var deviceType = "desktop";
 var workbookId;
 var viewId;
-var isHome;
+var isPortalHome;
 var showToolbar = false;
 var showTabs = false;
 var responsiveViz = false;
@@ -36,7 +35,7 @@ var updateFavoriteIcon = function() {
 	}
 }
 var updateNavbar = function() {
-	if (contentUrl === '') { // disable buttons for Portal Home
+	if (isPortalHome) { // disable buttons for Portal Home
 		$("#undoVizButton").addClass("disabled");
 		$("#redoVizButton").addClass("disabled");
 		$("#restartVizButton").addClass("disabled");
@@ -71,7 +70,7 @@ function startViz(url, refresh)
 			tableau_url = navUrl + (navUrl.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 			navUrl = null;
 		}
-		isHome = true;
+		isPortalHome = true;
 		showTabs = false;
 		showToolbar = false;
 		responsiveViz = false;
@@ -81,7 +80,7 @@ function startViz(url, refresh)
 	} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
-		isHome = false;
+		isPortalHome = false;
 		if (refresh) {
 			tableau_url = tableau_url + (tableau_url.indexOf('?') > 0 ? "&" : "?") + ":refresh=yes";
 		}
@@ -127,8 +126,8 @@ function startViz(url, refresh)
 			if (refresh) {
 				viz.revertAllAsync();
 			}
-			if (url === '') {
-				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener);
+			if (isPortalHome) {
+				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onPortalHomeSelect);
 			} else {
 				viz.addEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 				viz.addEventListener(tableau.TableauEventName.URL_ACTION, onUrlAction);
@@ -163,7 +162,7 @@ function startViz(url, refresh)
 				// console.log("xsrf_token = " + xsrf_token);
 			}
 			if (xsrf_token) {
-				if (url === '') { // execute only for Portal Home
+				if (isPortalHome) {
 					$.ajax({
 						url: tableau_protocol + "//" + tableau_host + "/vizportal/api/web/v1/getSessionInfo",
 						type: "post",
@@ -290,10 +289,11 @@ function startViz(url, refresh)
 	if (viz) {
 		viz.removeEventListener(tableau.TableauEventName.TAB_SWITCH, onTabSwitch);
 		viz.removeEventListener(tableau.TableauEventName.URL_ACTION, onUrlAction);
-		viz.removeEventListener(tableau.TableauEventName.MARKS_SELECTION, navigationSelectListener);
+		viz.removeEventListener(tableau.TableauEventName.MARKS_SELECTION, onPortalHomeSelect);
 		viz.dispose();
 	}
 
+	var vizDiv = document.getElementById("vizContainer");
 	vizDiv.innerHTML = "";
 	viz = new tableau.Viz(vizDiv, tableau_url, vizOptions);
 }
@@ -376,7 +376,6 @@ function initPage()
 	$("#vizContainer").height(newHeight);
 	$("#vizContainer").width(newWidth);
 
-	vizDiv = document.getElementById("vizContainer");
 	const urlParams = new URLSearchParams(window.location.search);
 	if (portal_custom_home.length > 0 && urlParams.has(portal_custom_home)) {
 		portal_home_url = urlParams.get(portal_custom_home);
@@ -396,7 +395,7 @@ function initPage()
 
 $(document).ready(initPage);
 
-function navigationSelectListener(marksEvent)
+function onPortalHomeSelect(marksEvent)
 {
 	viz.getCurrentUrlAsync().then(function(url) {
 		navUrl = url.substring(0, url.indexOf('?'));
@@ -494,7 +493,7 @@ function goBackViz()
 
 function exportPdfDlg()
 {
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		console.log("viz.showExportPDFDialog");
 		viz.showExportPDFDialog();
 	}
@@ -502,7 +501,7 @@ function exportPdfDlg()
 
 function exportPptDlg()
 {
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		console.log("viz.showExportPowerPointDialog");
 		viz.showExportPowerPointDialog();
 	}
@@ -510,7 +509,7 @@ function exportPptDlg()
 
 function exportCrosstabDlg()
 {
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		console.log("viz.showExportCrossTabDialog");
 		var ws = getWorksheetForExportExcel();
 		if (ws) {
@@ -524,7 +523,7 @@ function exportCrosstabDlg()
 function toggleDevice()
 {
 	var newWidth, newHeight;
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		if (deviceType === "desktop") {
 			newWidth = 1169;
 			newHeight = 827;
@@ -549,7 +548,7 @@ function toggleDevice()
 function toggleComments()
 {
 	console.log("comments button");
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		$("#vizComments").toggle();
 		if ($("#vizComments").is(":visible")) {
 			updateComments();
@@ -669,7 +668,7 @@ function addComment() {
 function toggleFavorite()
 {
 	console.log("favorites button clicked");
-	if (viz && !isHome && xsrf_token && workbookId) {
+	if (viz && !isPortalHome && xsrf_token && workbookId) {
 		if (workbookIsFavorite) {
 			console.log("remove from favorites");
 			$.ajax({
@@ -718,7 +717,7 @@ function toggleFavorite()
 
 function openTableauServer()
 {
-	if (viz && !isHome) {
+	if (viz && !isPortalHome) {
 		viz.getCurrentUrlAsync().then(function(url){
 			window.open(url.substring(0, url.indexOf('?')), "_blank");
 		});
