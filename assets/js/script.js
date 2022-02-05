@@ -5,15 +5,18 @@ var deviceType = "desktop";
 var workbookId;
 var viewId;
 var isPortalHome;
-var showToolbar = false;
-var showTabs = false;
-var responsiveViz = false;
-var useComments = false;
-var favoriteWorkbooks;
-var workbookIsFavorite = false;
 var sessionInfo;
 var xsrf_token;
 var timezone_offset;
+var showToolbar = false;
+var showTabs = false;
+var favoriteWorkbooks;
+var workbookIsFavorite = false;
+var exportToPdf = false;
+var exportToPpt = false;
+var exportToExcel = false;
+var responsiveViz = false;
+var useComments = false;
 
 // initialize customization variables and functions
 var tableau_protocol = window.location.protocol;
@@ -40,21 +43,43 @@ var updateNavbar = function() {
 		$("#redoVizButton").addClass("disabled");
 		$("#restartVizButton").addClass("disabled");
 		$("#toggleFavoriteButton").addClass("disabled");
-		$("#exportPdfButton").addClass("disabled");
-		$("#exportPptButton").addClass("disabled");
-		$("#exportExcelButton").addClass("disabled");
-		$("#toggleDeviceButton").addClass("disabled");
-		$("#toggleCommentsButton").addClass("disabled");
 	} else { // enable buttons for other workbooks
 		$("#undoVizButton").removeClass("disabled");
 		$("#redoVizButton").removeClass("disabled");
 		$("#restartVizButton").removeClass("disabled");
 		$("#toggleFavoriteButton").removeClass("disabled");
+	}
+	if (exportToPdf) { 
 		$("#exportPdfButton").removeClass("disabled");
+	} else {
+		$("#exportPdfButton").addClass("disabled");
+	}
+	if (exportToPpt) { 
 		$("#exportPptButton").removeClass("disabled");
+	} else {
+		$("#exportPptButton").addClass("disabled");
+	}
+	if (exportToExcel) { 
 		$("#exportExcelButton").removeClass("disabled");
+	} else {
+		$("#exportExcelButton").addClass("disabled");
+	}
+	if (deviceType === "tablet") {
+		$("#deviceType").text("Laptop");
+		$("#toggleDeviceIcon").removeClass("bi-display").addClass("bi-laptop");
+	} else {
+		$("#deviceType").text("Desktop");
+		$("#toggleDeviceIcon").addClass("bi-display").removeClass("bi-laptop");
+	}
+	if (responsiveViz) {
 		$("#toggleDeviceButton").removeClass("disabled");
+	} else {
+		$("#toggleDeviceButton").addClass("disabled");
+	}
+	if (useComments) {
 		$("#toggleCommentsButton").removeClass("disabled");
+	} else {
+		$("#toggleCommentsButton").addClass("disabled");
 	}
 }
 
@@ -76,7 +101,6 @@ function startViz(url, refresh)
 		responsiveViz = false;
 		workbookId = null;
 		workbookIsFavorite = false;
-		deviceType = "desktop";
 	} else {
 		var regexContentUrl = new RegExp( "^" + tableau_url.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		tableau_url = (contentUrl.match(regexContentUrl) ? "" : tableau_url) + contentUrl.replace(/^site/, "t");
@@ -107,25 +131,11 @@ function startViz(url, refresh)
 		onFirstInteractive: function() {
 			console.log("onFirstInteractive");
 			$('#vizContainer').css("background-image", "none");
-			// $('#vizContainer iframe').css("margin-left", "100px");
-			if (getWorksheetForExportExcel()) {
-				$("#exportExcelItem").show();
-			} else {
-				$("#exportExcelItem").hide();
-			}
-			if (responsiveViz) {
-				$("#toggleDeviceItem").show();
-			} else {
-				$("#toggleDeviceItem").hide();
-			}
-			if (useComments) {
-				$("#toggleCommentsItem").show();
-			} else {
-				$("#toggleCommentsItem").hide();
-			}
 			if (refresh) {
 				viz.revertAllAsync();
 			}
+			updatePortalButtons();
+			updateNavbar();
 			if (isPortalHome) {
 				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onPortalHomeSelect);
 			} else {
@@ -316,18 +326,33 @@ function getWorksheetForExportExcel() {
 	return ws;
 }
 
+function updatePortalButtons() {
+	if (getWorksheetForExportExcel()) {
+		exportToExcel = true;
+	} else {
+		exportToExcel = false;
+	}
+	if (!isPortalHome) { // ASL TODO: make dependent on substring in worksheet names
+		exportToPdf = true;
+	} else {
+		exportToPdf = false;
+	}
+	if (!isPortalHome) { // ASL TODO: make dependent on substring in worksheet names
+		exportToPpt = true;
+	} else {
+		exportToPpt = false;
+	}
+}
+
 function onTabSwitch(tabSwitchEvent) {
 	console.log("tab switch event");
-	if (getWorksheetForExportExcel()) {
-		$("#exportExcelItem").show();
-	} else {
-		$("#exportExcelItem").hide();
-	}
 	var newsheet = tabSwitchEvent.getNewSheetName();
 	// ASL TODO: get new view id for comments feature
 	// console.log(newsheet);
 	// var sheets = viz.getWorkbook().getPublishedSheetsInfo();
 	// console.log(sheets);
+	updatePortalButtons();
+	updateNavbar();
 	
 	if (substr_print_to_pdf.length > 0) {
 		var goToPrintPdfRegexp = new RegExp( "^" + substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
@@ -525,22 +550,21 @@ function toggleDevice()
 	var newWidth, newHeight;
 	if (viz && !isPortalHome) {
 		if (deviceType === "desktop") {
+			deviceType = "tablet";
 			newWidth = 1169;
 			newHeight = 827;
 			$("#vizContainer").css("margin-left", "375px");
 			$("#vizContainer").width(newWidth);
 			$("#vizContainer").height(newHeight);
-			deviceType = "tablet";
-			$("#deviceType").text("Laptop");
 		} else {
+			deviceType = "desktop";
 			newWidth = window.screen.width;
 			newHeight = window.screen.height - $("#portalHeader").height()-200;
 			$("#vizContainer").css("margin-left", "0px");
 			$("#vizContainer").width(newWidth);
 			$("#vizContainer").height(newHeight);
-			deviceType = "desktop";
-			$("#deviceType").text("Desktop");
 		}
+		updateNavbar();
 		startViz(contentUrl);
 	}
 }

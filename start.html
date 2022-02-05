@@ -20,9 +20,9 @@
 			background-color: #fff;
 		}
 		@media (min-width: 992px) {
-    		li.nav-item {
-        		margin-right : 1em;
-    		}
+			li.nav-item {
+				margin-right : 1em;
+			}
 		}
 	</style>
 
@@ -52,6 +52,11 @@
 							<span class="bi-house"> Home</span>
 						</a>
 					</li>
+					<li class="nav-item" id="goBackItem" style="display: none;">
+						<a class="nav-link user-select-none" id="goBackButton" aria-current="page" href="#" onclick="goBackViz();">
+							<span class="bi-arrow-right-circle"> Go Back</span>
+						</a>
+					</li>
 					<li class="nav-item" id="undoVizItem">
 						<a class="nav-link user-select-none" id="undoVizButton" aria-current="page" href="#" onclick="undoViz();">
 							<span class="bi-arrow-left-circle"> Undo</span>
@@ -62,26 +67,36 @@
 							<span class="bi-arrow-right-circle"> Redo</span>
 						</a>
 					</li>
-				  	<li class="nav-item" id="restartVizItem">
+					<li class="nav-item" id="restartVizItem">
 						<a class="nav-link user-select-none" id="restartVizButton" aria-current="page" href="#" onclick="restartViz();">
-							<span class="bi-arrow-repeat"> Reload</span>
+							<span class="bi-arrow-repeat"></span> Reload
 						</a>
 					</li>
-				  	<li class="nav-item" id="toggleFavoriteItem">
+					<li class="nav-item" id="toggleFavoriteItem">
 						<a class="nav-link user-select-none" id="toggleFavoriteButton" aria-current="page" href="#" onclick="toggleFavorite();">
-							<span id="toggleFavoriteIcon" class="bi-star"> Favorite</span>
+							<span id="toggleFavoriteIcon" class="bi-star"></span> Favorite
+						</a>
+					</li>
+					<li class="nav-item" id="toggleDeviceItem">
+						<a class="nav-link user-select-none" id="toggleDeviceButton" aria-current="page" href="#" onclick="toggleDevice();">
+							<span id="toggleDeviceIcon" class="bi-display"></span> <span id="deviceType">Desktop</span>
+						</a>
+					</li>
+					<li class="nav-item" id="toggleCommentsItem">
+						<a class="nav-link user-select-none" id="toggleCommentsButton" aria-current="page" href="#" onclick="toggleComments();">
+							<span class="bi-chat-left-text"></span> Comments
 						</a>
 					</li>
 					<li class="nav-item dropdown">
-						<a class="nav-link user-select-none dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+						<a class="nav-link user-select-none dropdown-toggle" href="#" id="navbarExportDropdownLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
 							<span class="bi-box-arrow-up-right"> Export</span>
 						</a>
-						<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-						  <li id="exportPdfItem"><a class="dropdown-item user-select-none" id="exportPdfButton" href="#" onclick="exportPdfDlg();"><span class="bi-file-pdf"> Export to PDF</span></a></li>
-						  <li id="exportPptItem"><a class="dropdown-item user-select-none" id="exportPptButton" href="#" onclick="exportPptDlg();"><span class="bi-file-ppt"> Export to PowerPoint</span></a></li>
-						  <li id="exportExcelItem"><a class="dropdown-item user-select-none" id="exportExcelButton" href="#" onclick="exportCrosstabDlg();"><span class="bi-file-excel"> Export to Excel</span></a></li>
+						<ul class="dropdown-menu" aria-labelledby="navbarExportDropdownLink">
+							<li id="exportPdfItem"><a class="dropdown-item user-select-none" id="exportPdfButton" href="#" onclick="exportPdfDlg();"><span class="bi-file-pdf"> Export to PDF</span></a></li>
+							<li id="exportPptItem"><a class="dropdown-item user-select-none" id="exportPptButton" href="#" onclick="exportPptDlg();"><span class="bi-file-ppt"> Export to PowerPoint</span></a></li>
+							<li id="exportExcelItem"><a class="dropdown-item user-select-none" id="exportExcelButton" href="#" onclick="exportCrosstabDlg();"><span class="bi-file-excel"> Export to Excel</span></a></li>
 						</ul>
-					  </li>
+					</li>
 				</ul>
 			</div>
 		</div><!-- /.container-fluid -->
