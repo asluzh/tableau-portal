@@ -65,6 +65,11 @@ var updateNavbar = function() {
 	} else {
 		$("#exportExcelButton").addClass("disabled");
 	}
+	if (!exportToPdf && !exportToPpt && !exportToExcel) {
+		$("#navbarExportDropdownLink").addClass("disabled");
+	} else {
+		$("#navbarExportDropdownLink").removeClass("disabled");
+	}
 	if (deviceType === "tablet") {
 		$("#deviceType").text("Laptop");
 		$("#toggleDeviceIcon").removeClass("bi-display").addClass("bi-laptop");
