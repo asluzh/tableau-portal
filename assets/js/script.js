@@ -16,6 +16,7 @@ var exportToPdf = false;
 var exportToPpt = false;
 var exportToExcel = false;
 var responsiveViz = false;
+var enableComments = false;
 var useComments = false;
 
 // initialize customization variables and functions
@@ -75,6 +76,11 @@ var updateNavbar = function() {
 		$("#toggleDeviceButton").removeClass("disabled");
 	} else {
 		$("#toggleDeviceButton").addClass("disabled");
+	}
+	if (enableComments) {
+		$("#toggleCommentsItem").show();
+	} else {
+		$("#toggleCommentsItem").hide();
 	}
 	if (useComments) {
 		$("#toggleCommentsButton").removeClass("disabled");
