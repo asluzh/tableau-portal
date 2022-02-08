@@ -16,8 +16,8 @@ updateFavoriteIcon = function() { // override default feature
 	}
 }
 
-updateNavbar = function() { // previous default behavior, hide buttons
-	if (isPortalHome) {
+updateNavbar = function(only_go_back) { // previous default behavior, hide buttons
+	if (isPortalHome || only_go_back) {
 		$("#undoVizItem").hide();
 		$("#redoVizItem").hide();
 		$("#goBackItem").hide();
@@ -36,5 +36,9 @@ updateNavbar = function() { // previous default behavior, hide buttons
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
 		$("#exportPptItem").show();
+	}
+	if (only_go_back) {
+		$("#goBackItem").show();
+		$("#restartVizItem").hide();
 	}
 }

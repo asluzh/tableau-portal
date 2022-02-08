@@ -15,9 +15,9 @@ var workbookIsFavorite = false;
 var exportToPdf = false;
 var exportToPpt = false;
 var exportToExcel = false;
-var responsiveViz = false;
-var enableComments = false;
-var useComments = false;
+var responsiveViz = false; // show device toggle icon on navbar
+var enableComments = false; // show comments icon on navbar
+var useComments = false; // enable comments icon for a specific workbook
 
 // initialize customization variables and functions
 var tableau_protocol = window.location.protocol;
@@ -31,68 +31,6 @@ var substr_export_to_excel = "#excel"; // optional, substring for matching to en
 var substr_export_to_pdf = ""; // optional, substring for matching to enable Export to PDF
 var substr_export_to_ppt = ""; // optional, substring for matching to enable Export to PowerPoint
 var substr_print_to_pdf = "#print"; // optional, substring for matching to enable Print to PDF
-var updateFavoriteIcon = function() {
-	if (workbookIsFavorite) {
-		$("#toggleFavoriteIcon").removeClass("bi-star").addClass("bi-star-fill");
-	} else {
-		$("#toggleFavoriteIcon").addClass("bi-star").removeClass("bi-star-fill");
-	}
-}
-var updateNavbar = function() {
-	if (isPortalHome) { // disable buttons for Portal Home
-		$("#undoVizButton").addClass("disabled");
-		$("#redoVizButton").addClass("disabled");
-		$("#restartVizButton").addClass("disabled");
-		$("#toggleFavoriteButton").addClass("disabled");
-	} else { // enable buttons for other workbooks
-		$("#undoVizButton").removeClass("disabled");
-		$("#redoVizButton").removeClass("disabled");
-		$("#restartVizButton").removeClass("disabled");
-		$("#toggleFavoriteButton").removeClass("disabled");
-	}
-	if (exportToPdf) { 
-		$("#exportPdfButton").removeClass("disabled");
-	} else {
-		$("#exportPdfButton").addClass("disabled");
-	}
-	if (exportToPpt) { 
-		$("#exportPptButton").removeClass("disabled");
-	} else {
-		$("#exportPptButton").addClass("disabled");
-	}
-	if (exportToExcel) { 
-		$("#exportExcelButton").removeClass("disabled");
-	} else {
-		$("#exportExcelButton").addClass("disabled");
-	}
-	if (!exportToPdf && !exportToPpt && !exportToExcel) {
-		$("#navbarExportDropdownLink").addClass("disabled");
-	} else {
-		$("#navbarExportDropdownLink").removeClass("disabled");
-	}
-	if (deviceType === "tablet") {
-		$("#deviceType").text("Laptop");
-		$("#toggleDeviceIcon").removeClass("bi-display").addClass("bi-laptop");
-	} else {
-		$("#deviceType").text("Desktop");
-		$("#toggleDeviceIcon").addClass("bi-display").removeClass("bi-laptop");
-	}
-	if (responsiveViz) {
-		$("#toggleDeviceButton").removeClass("disabled");
-	} else {
-		$("#toggleDeviceButton").addClass("disabled");
-	}
-	if (enableComments) {
-		$("#toggleCommentsItem").show();
-	} else {
-		$("#toggleCommentsItem").hide();
-	}
-	if (useComments) {
-		$("#toggleCommentsButton").removeClass("disabled");
-	} else {
-		$("#toggleCommentsButton").addClass("disabled");
-	}
-}
 
 function startViz(url, refresh)
 {
@@ -145,7 +83,7 @@ function startViz(url, refresh)
 			if (refresh) {
 				viz.revertAllAsync();
 			}
-			updatePortalButtons();
+			updateExportButtons();
 			updateNavbar();
 			if (isPortalHome) {
 				viz.addEventListener(tableau.TableauEventName.MARKS_SELECTION, onPortalHomeSelect);
@@ -337,7 +275,7 @@ function getWorksheetForExportExcel() {
 	return ws;
 }
 
-function updatePortalButtons() {
+function updateExportButtons() {
 	if (getWorksheetForExportExcel()) {
 		exportToExcel = true;
 	} else {
@@ -355,6 +293,87 @@ function updatePortalButtons() {
 	}
 }
 
+function updateNavbar(only_go_back) {
+	if (only_go_back) {
+		$("#undoVizItem").hide();
+		$("#redoVizItem").hide();
+		$("#goBackItem").show();
+		$("#restartVizItem").hide();
+		$("#toggleFavoriteItem").hide();
+		$("#exportPdfItem").hide();
+		$("#exportPptItem").hide();
+	} else {
+		$("#undoVizItem").show();
+		$("#redoVizItem").show();
+		$("#goBackItem").hide();
+		$("#restartVizItem").show();
+		$("#toggleFavoriteItem").show();
+		$("#exportPdfItem").show();
+		$("#exportPptItem").show();
+	}
+	if (isPortalHome) { // disable buttons for Portal Home
+		$("#undoVizButton").addClass("disabled");
+		$("#redoVizButton").addClass("disabled");
+		$("#restartVizButton").addClass("disabled");
+		$("#toggleFavoriteButton").addClass("disabled");
+	} else { // enable buttons for other workbooks
+		$("#undoVizButton").removeClass("disabled");
+		$("#redoVizButton").removeClass("disabled");
+		$("#restartVizButton").removeClass("disabled");
+		$("#toggleFavoriteButton").removeClass("disabled");
+	}
+	if (exportToPdf) { 
+		$("#exportPdfButton").removeClass("disabled");
+	} else {
+		$("#exportPdfButton").addClass("disabled");
+	}
+	if (exportToPpt) { 
+		$("#exportPptButton").removeClass("disabled");
+	} else {
+		$("#exportPptButton").addClass("disabled");
+	}
+	if (exportToExcel) { 
+		$("#exportExcelButton").removeClass("disabled");
+	} else {
+		$("#exportExcelButton").addClass("disabled");
+	}
+	if (!exportToPdf && !exportToPpt && !exportToExcel) {
+		$("#navbarExportDropdownLink").addClass("disabled");
+	} else {
+		$("#navbarExportDropdownLink").removeClass("disabled");
+	}
+	if (deviceType === "tablet") {
+		$("#deviceType").text("Laptop");
+		$("#toggleDeviceIcon").removeClass("bi-display").addClass("bi-laptop");
+	} else {
+		$("#deviceType").text("Desktop");
+		$("#toggleDeviceIcon").addClass("bi-display").removeClass("bi-laptop");
+	}
+	if (responsiveViz) {
+		$("#toggleDeviceButton").removeClass("disabled");
+	} else {
+		$("#toggleDeviceButton").addClass("disabled");
+	}
+	if (enableComments) {
+		$("#toggleCommentsItem").show();
+	} else {
+		$("#toggleCommentsItem").hide();
+	}
+	if (useComments) {
+		$("#toggleCommentsButton").removeClass("disabled");
+	} else {
+		$("#toggleCommentsButton").addClass("disabled");
+	}
+}
+
+function updateFavoriteIcon() {
+	if (workbookIsFavorite) {
+		$("#toggleFavoriteIcon").removeClass("bi-star").addClass("bi-star-fill");
+	} else {
+		$("#toggleFavoriteIcon").addClass("bi-star").removeClass("bi-star-fill");
+	}
+}
+
 function onTabSwitch(tabSwitchEvent) {
 	console.log("tab switch event");
 	var newsheet = tabSwitchEvent.getNewSheetName();
@@ -362,28 +381,15 @@ function onTabSwitch(tabSwitchEvent) {
 	// console.log(newsheet);
 	// var sheets = viz.getWorkbook().getPublishedSheetsInfo();
 	// console.log(sheets);
-	updatePortalButtons();
-	updateNavbar();
+	updateExportButtons();
 	
 	if (substr_print_to_pdf.length > 0) {
 		var goToPrintPdfRegexp = new RegExp( "^" + substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		if (newsheet.match(goToPrintPdfRegexp)) {
-			$("#undoVizItem").hide();
-			$("#redoVizItem").hide();
-			$("#goBackItem").show();
-			$("#restartVizItem").hide();
-			$("#toggleFavoriteItem").hide();
-			$("#exportPdfItem").hide();
-			$("#exportPptItem").hide();
+			updateNavbar(true);
 			exportPdfDlg();
 		} else {
-			$("#undoVizItem").show();
-			$("#redoVizItem").show();
-			$("#goBackItem").hide();
-			$("#restartVizItem").show();
-			$("#toggleFavoriteItem").show();
-			$("#exportPdfItem").show();
-			$("#exportPptItem").show();
+			updateNavbar();
 		}
 	}
 }
