@@ -261,7 +261,7 @@ function getWorksheetForExportExcel() {
 	var vizsheet = viz.getWorkbook().getActiveSheet();
 	var ws = null;
 	if (substr_export_to_excel.length > 0) {
-		var exportToExcelRegexp = new RegExp( "^" + substr_export_to_excel.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+		var exportToExcelRegexp = new RegExp( substr_export_to_excel.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		if (vizsheet.getSheetType()==tableau.SheetType.DASHBOARD) {
 			vizsheet.getWorksheets().forEach(function(v) {
 				if (v.getName().match(exportToExcelRegexp)) {
@@ -384,7 +384,7 @@ function onTabSwitch(tabSwitchEvent) {
 	updateExportButtons();
 	
 	if (substr_print_to_pdf.length > 0) {
-		var goToPrintPdfRegexp = new RegExp( "^" + substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
+		var goToPrintPdfRegexp = new RegExp( substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		if (newsheet.match(goToPrintPdfRegexp)) {
 			updateNavbar(true);
 			exportPdfDlg();
