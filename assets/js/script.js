@@ -66,10 +66,10 @@ function startViz(url, refresh)
 				}
 			});
 		}
-		updateFavoriteIcon();
 	}
 
 	console.log("url: " + tableau_url);
+	updateFavoriteIcon();
 	updateNavbar();
 
 	var vizOptions = {

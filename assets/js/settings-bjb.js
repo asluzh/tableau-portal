@@ -18,15 +18,18 @@ updateFavoriteIcon = function() { // override default feature
 
 updateNavbar = function(only_go_back) { // previous default behavior, hide buttons
 	if (isPortalHome || only_go_back) {
+		$("#iconHome").addClass("icon_home").removeClass("icon_circle-round-up");
 		$("#undoVizItem").hide();
 		$("#redoVizItem").hide();
 		$("#goBackItem").hide();
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").hide();
+		$("#toggleDeviceItem").hide();
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
 		$("#exportExcelItem").hide();
 	} else {
+		$("#iconHome").removeClass("icon_home").addClass("icon_circle-round-up");
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
 		$("#goBackItem").hide();
@@ -34,6 +37,11 @@ updateNavbar = function(only_go_back) { // previous default behavior, hide butto
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
 		$("#exportPptItem").show();
+		if (responsiveViz) {
+			$("#toggleDeviceItem").show();
+		} else {
+			$("#toggleDeviceItem").hide();
+		}
 		if (exportToExcel) { 
 			$("#exportExcelItem").show();
 		} else {
