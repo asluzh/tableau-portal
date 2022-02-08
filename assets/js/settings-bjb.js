@@ -26,8 +26,6 @@ updateNavbar = function(only_go_back) { // previous default behavior, hide butto
 		$("#exportPdfItem").hide();
 		$("#exportPptItem").hide();
 		$("#exportExcelItem").hide();
-		$("#toggleDeviceItem").hide();
-		$("#toggleCommentsItem").hide();
 	} else {
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
@@ -36,6 +34,11 @@ updateNavbar = function(only_go_back) { // previous default behavior, hide butto
 		$("#toggleFavoriteItem").show();
 		$("#exportPdfItem").show();
 		$("#exportPptItem").show();
+		if (exportToExcel) { 
+			$("#exportExcelItem").show();
+		} else {
+			$("#exportExcelItem").hide();
+		}
 	}
 	if (only_go_back) {
 		$("#goBackItem").show();

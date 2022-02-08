@@ -300,16 +300,14 @@ function updateNavbar(only_go_back) {
 		$("#goBackItem").show();
 		$("#restartVizItem").hide();
 		$("#toggleFavoriteItem").hide();
-		$("#exportPdfItem").hide();
-		$("#exportPptItem").hide();
+		$("#navbarExportDropdownLink").hide();
 	} else {
 		$("#undoVizItem").show();
 		$("#redoVizItem").show();
 		$("#goBackItem").hide();
 		$("#restartVizItem").show();
 		$("#toggleFavoriteItem").show();
-		$("#exportPdfItem").show();
-		$("#exportPptItem").show();
+		$("#navbarExportDropdownLink").show();
 	}
 	if (isPortalHome) { // disable buttons for Portal Home
 		$("#undoVizButton").addClass("disabled");
@@ -381,14 +379,17 @@ function onTabSwitch(tabSwitchEvent) {
 	// console.log(newsheet);
 	// var sheets = viz.getWorkbook().getPublishedSheetsInfo();
 	// console.log(sheets);
-	updateExportButtons();
 	
 	if (substr_print_to_pdf.length > 0) {
 		var goToPrintPdfRegexp = new RegExp( substr_print_to_pdf.replace(/[\/\\^$*+?.()|[\]{}]/g , "\\$&") );
 		if (newsheet.match(goToPrintPdfRegexp)) {
+			exportToPdf = false;
+			exportToPdf = false;
+			exportToExcel = false;
 			updateNavbar(true);
 			exportPdfDlg();
 		} else {
+			updateExportButtons();
 			updateNavbar();
 		}
 	}
