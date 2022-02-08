@@ -409,14 +409,25 @@ function onUrlAction(urlActionEvent) {
 	}
 }
 
+function setVizSize() {
+	var newHeight = window.screen.height;
+	var newWidth  = window.screen.width;
+	if (deviceType === "tablet") {
+		newWidth = 1169;
+		newHeight = 827;
+		// $("#vizContainer").css("margin-left", "375px");
+	} else { // deviceType = desktop
+		newHeight -= newHeight - $("#portalHeader").height()-200; // 200 is sufficient buffer space to reserve for menubar, statusbar, favorites, etc.
+		// $("#vizContainer").css("margin-left", "0px");
+	}
+	$("#vizContainer").width(newWidth);
+	$("#vizContainer").height(newHeight);
+}
+
 function initPage()
 {
-	var newHeight = window.screen.height - $("#portalHeader").height()-200; // 200 is sufficient buffer space to reserve for menubar, statusbar, favorites, etc.
-	var newWidth = window.screen.width;
+	setVizSize();
 	timezone_offset = new Date().getTimezoneOffset();
-
-	$("#vizContainer").height(newHeight);
-	$("#vizContainer").width(newWidth);
 
 	const urlParams = new URLSearchParams(window.location.search);
 	if (portal_custom_home.length > 0 && urlParams.has(portal_custom_home)) {
@@ -568,18 +579,10 @@ function toggleDevice()
 	if (viz && !isPortalHome) {
 		if (deviceType === "desktop") {
 			deviceType = "tablet";
-			newWidth = 1169;
-			newHeight = 827;
-			$("#vizContainer").css("margin-left", "375px");
-			$("#vizContainer").width(newWidth);
-			$("#vizContainer").height(newHeight);
+			setVizSize();
 		} else {
 			deviceType = "desktop";
-			newWidth = window.screen.width;
-			newHeight = window.screen.height - $("#portalHeader").height()-200;
-			$("#vizContainer").css("margin-left", "0px");
-			$("#vizContainer").width(newWidth);
-			$("#vizContainer").height(newHeight);
+			setVizSize();
 		}
 		updateNavbar();
 		startViz(contentUrl);
