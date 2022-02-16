@@ -379,10 +379,10 @@ function updateFavoritesMenu() {
 	if (Array.isArray(favoriteWorkbooks)) {
 		$("#navbarFavoritesDropdownLink").removeClass("disabled");
 		var favoritesHtmlUl = $("#favoritesMenuItem > ul");
-		console.log(favoritesHtmlUl);
+		console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
-			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#">'+v.name+'</a></li>');
+			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#" onclick="startViz("'+v.name+'")">'+v.name+'</a></li>');
 		});
 	} else {
 		$("#navbarFavoritesDropdownLink").addClass("disabled");
