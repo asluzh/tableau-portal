@@ -230,11 +230,12 @@ function startViz(url, refresh)
 						success: function (data) {
 							if (data.result.workbooks && Array.isArray(data.result.workbooks)) {
 								favoriteWorkbooks = data.result.workbooks;
+								updateFavoritesMenu();
 							}
 						}
 					}); // getFavorites
-				}	
-			}
+				} // if isPortalHome
+			} // if xsrf_token
 		} // onFirstInteractive function
 	}; // var vizOptions
 
@@ -314,11 +315,13 @@ function updateNavbar(only_go_back) {
 		$("#redoVizButton").addClass("disabled");
 		$("#restartVizButton").addClass("disabled");
 		$("#toggleFavoriteButton").addClass("disabled");
+		$("#favoritesMenuItem").show();
 	} else { // enable buttons for other workbooks
 		$("#undoVizButton").removeClass("disabled");
 		$("#redoVizButton").removeClass("disabled");
 		$("#restartVizButton").removeClass("disabled");
 		$("#toggleFavoriteButton").removeClass("disabled");
+		$("#favoritesMenuItem").hide();
 	}
 	if (exportToPdf) { 
 		$("#exportPdfButton").removeClass("disabled");
@@ -369,6 +372,20 @@ function updateFavoriteIcon() {
 		$("#toggleFavoriteIcon").removeClass("bi-star").addClass("bi-star-fill");
 	} else {
 		$("#toggleFavoriteIcon").addClass("bi-star").removeClass("bi-star-fill");
+	}
+}
+
+function updateFavoritesMenu() {
+	if (Array.isArray(favoriteWorkbooks)) {
+		$("#navbarFavoritesDropdownLink").removeClass("disabled");
+		var favoritesHtmlUl = $("#navbarFavoritesDropdownLink ul");
+		console.log(favoriteWorkbooks);
+		favoritesHtmlUl.empty();
+		favoriteWorkbooks.forEach(function(v) {
+			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#">'+v.name+'</a></li>');
+		});
+	} else {
+		$("#navbarFavoritesDropdownLink").addClass("disabled");
 	}
 }
 
