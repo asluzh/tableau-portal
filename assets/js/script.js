@@ -314,13 +314,13 @@ function updateNavbar(only_go_back) {
 		$("#undoVizButton").addClass("disabled");
 		$("#redoVizButton").addClass("disabled");
 		$("#restartVizButton").addClass("disabled");
-		$("#toggleFavoriteButton").addClass("disabled");
+		$("#toggleFavoriteButton").addClass("disabled").hide();
 		$("#favoritesMenuItem").show();
 	} else { // enable buttons for other workbooks
 		$("#undoVizButton").removeClass("disabled");
 		$("#redoVizButton").removeClass("disabled");
 		$("#restartVizButton").removeClass("disabled");
-		$("#toggleFavoriteButton").removeClass("disabled");
+		$("#toggleFavoriteButton").removeClass("disabled").show();
 		$("#favoritesMenuItem").hide();
 	}
 	if (exportToPdf) { 
@@ -382,7 +382,7 @@ function updateFavoritesMenu() {
 		console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
-			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#" onclick="startViz("views/'+v.defaultViewUrl+'")">'+v.name+'</a></li>');
+			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#" onclick="startViz("'+v.defaultViewUrl+'")">'+v.name+'</a></li>');
 		});
 	} else {
 		$("#navbarFavoritesDropdownLink").addClass("disabled");
