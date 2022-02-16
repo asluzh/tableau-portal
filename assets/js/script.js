@@ -378,8 +378,8 @@ function updateFavoriteIcon() {
 function updateFavoritesMenu() {
 	if (Array.isArray(favoriteWorkbooks)) {
 		$("#navbarFavoritesDropdownLink").removeClass("disabled");
-		var favoritesHtmlUl = $("#navbarFavoritesDropdownLink ul");
-		console.log(favoriteWorkbooks);
+		var favoritesHtmlUl = $("#navbarFavoritesDropdownLink > .dropdown-menu");
+		// console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
 			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#">'+v.name+'</a></li>');
