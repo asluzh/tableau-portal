@@ -379,7 +379,7 @@ function updateFavoritesMenu() {
 	if (Array.isArray(favoriteWorkbooks)) {
 		$("#navbarFavoritesDropdownLink").removeClass("disabled");
 		var favoritesHtmlUl = $("#favoritesMenuItem > ul");
-		// console.log(favoriteWorkbooks);
+		console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
 			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#" onclick="startViz("views/'+v.defaultViewUrl+'")">'+v.name+'</a></li>');
