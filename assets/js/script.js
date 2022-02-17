@@ -382,7 +382,12 @@ function updateFavoritesMenu() {
 		console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
-			favoritesHtmlUl.append('<li><a class="dropdown-item user-select-none" href="#" onclick="startViz("'+v.defaultViewUrl+'")">'+v.name+'</a></li>');
+			favoritesHtmlUl.append("<li>")
+				.append('<a class="dropdown-item user-select-none" href="#">')
+					.text(v.name)
+					.bind('click', function() {
+						console.log(v.defaultViewUrl);
+					});
 		});
 	} else {
 		$("#navbarFavoritesDropdownLink").addClass("disabled");
