@@ -383,11 +383,11 @@ function updateFavoritesMenu() {
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
 			favoritesHtmlUl.append("<li>")
-				.append('<a class="dropdown-item user-select-none" href="#">')
-					.text(v.name)
-					.bind('click', function() {
-						console.log(v.defaultViewUrl);
-					});
+				.append('<a class="dropdown-item user-select-none" href="#">');
+					// .text(v.name)
+					// .bind('click', function() {
+					// 	console.log(v.defaultViewUrl);
+					// });
 		});
 	} else {
 		$("#navbarFavoritesDropdownLink").addClass("disabled");
