@@ -379,15 +379,15 @@ function updateFavoritesMenu() {
 	if (Array.isArray(favoriteWorkbooks)) {
 		$("#navbarFavoritesDropdownLink").removeClass("disabled");
 		var favoritesHtmlUl = $("#favoritesMenuItem > ul");
-		console.log(favoriteWorkbooks);
+		// console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
 		favoriteWorkbooks.forEach(function(v) {
-			favoritesHtmlUl.append("<li>")
-				.append('<a class="dropdown-item user-select-none" href="#">');
-					// .text(v.name)
-					// .bind('click', function() {
-					// 	console.log(v.defaultViewUrl);
-					// });
+			$("<li>").append($('<a class="dropdown-item user-select-none" href="#">')
+				.text(v.name)
+				.bind('click', function() {
+						startViz('views/'+v.defaultViewUrl);
+				})
+			).appendTo(favoritesHtmlUl);
 		});
 	} else {
 		$("#navbarFavoritesDropdownLink").addClass("disabled");
