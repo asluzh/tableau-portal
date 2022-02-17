@@ -385,7 +385,13 @@ function updateFavoritesMenu() {
 			$("<li>").append($('<a class="dropdown-item user-select-none" href="#">')
 				.text(v.name)
 				.bind('click', function() {
-						startViz('views/'+v.defaultViewUrl);
+					workbookId = v.id;
+					viewId = null; // TODO
+					showTabs = v.tags.indexOf('showtabs') >= 0;
+					showToolbar = v.tags.indexOf('showtoolbar') >= 0;
+					responsiveViz = v.tags.indexOf('responsive') >= 0;
+					useComments = v.tags.indexOf('comments') >= 0;
+					startViz('views/'+v.defaultViewUrl);
 				})
 			).appendTo(favoritesHtmlUl);
 		});
