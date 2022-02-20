@@ -379,7 +379,7 @@ function updateFavoriteIcon() {
 
 function updateFavoritesMenu() {
 	if (Array.isArray(favoriteWorkbooks)) {
-		$("#navbarFavoritesDropdownLink").removeClass("disabled");
+		$("#navbarFavoritesDropdownButton").removeClass("disabled");
 		var favoritesHtmlUl = $("#favoritesMenuItem > ul");
 		// console.log(favoriteWorkbooks);
 		favoritesHtmlUl.empty();
@@ -398,7 +398,7 @@ function updateFavoritesMenu() {
 			).appendTo(favoritesHtmlUl);
 		});
 	} else {
-		$("#navbarFavoritesDropdownLink").addClass("disabled");
+		$("#navbarFavoritesDropdownButton").addClass("disabled");
 	}
 }
 
