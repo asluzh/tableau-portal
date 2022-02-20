@@ -351,9 +351,11 @@ function updateNavbar(only_go_back) {
 		$("#toggleDeviceIcon").addClass("bi-display").removeClass("bi-laptop");
 	}
 	if (responsiveViz) {
-		$("#toggleDeviceButton").removeClass("disabled");
+		// $("#toggleDeviceButton").removeClass("disabled");
+		$("#toggleDeviceItem").show();
 	} else {
-		$("#toggleDeviceButton").addClass("disabled");
+		// $("#toggleDeviceButton").addClass("disabled");
+		$("#toggleDeviceItem").hide();
 	}
 	if (enableComments) {
 		$("#toggleCommentsItem").show();
