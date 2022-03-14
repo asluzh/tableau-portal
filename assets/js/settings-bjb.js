@@ -1,5 +1,5 @@
 //tableau_protocol = "https:"; // override for testing
-//tableau_host = "tableau-portal.westeurope.cloudapp.azure.com"; // override for testing
+//tableau_host = "taluat1"; // override for testing
 portal_home_url = "t/JB-CH/views/Navigation/Home"; // mandatory, URL for the home page
 // portal_custom_home = "portal"; // optional, specifies URL parameter which specifies alternative portal home location
 portal_remember_param = "CurrentTopic"; // optional, defines Tableau parameter for remembering portal location
